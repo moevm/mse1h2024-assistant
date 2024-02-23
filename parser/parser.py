@@ -1,8 +1,10 @@
 import json
 import sys
+
 sys.setrecursionlimit(1000000)
 import requests
 from bs4 import BeautifulSoup
+
 
 def check_links(links, viewed_links):
     new_links = []
@@ -24,10 +26,9 @@ def scrape_page(url, viewed_links):
         print("An error occurred while scraping the page:", e)
         return None
 
-MAX_DEPTH = 10
 
-def recursive_scrape(page, viewed_links, li, depth=0):
-    if depth >= MAX_DEPTH:
+def recursive_scrape(page, viewed_links, li, depth, max_depth):
+    if depth >= max_depth:
         return []
 
     result = []
@@ -39,37 +40,37 @@ def recursive_scrape(page, viewed_links, li, depth=0):
             if 'links' in page_data:
                 for link in page_data["links"]:
                     if li in link:
-                        result.extend(recursive_scrape({'name': '', 'url': link}, viewed_links, li, depth + 1))
+                        result.extend(
+                            recursive_scrape({'name': '', 'url': link}, viewed_links, li, depth + 1, max_depth))
     return result
 
 
-url = "https://se.moevm.info/doku.php"
-response = requests.get(url)
-soup = BeautifulSoup(response.text, 'html.parser')
+def read_courses():
+    url = "https://se.moevm.info/doku.php"
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    courses_data = {}
+    course_elems = soup.find_all('li', class_=["level1 node", "level2 node", "level3 node"])
+    courses_data["info"] = []
+    for course_elem in course_elems:
+        course_name = course_elem.find("div", class_="li").text.strip()
+        subjects = course_elem.find_all("a", class_="wikilink1")
+        courses_data[course_name] = []
+        for subject in subjects:
+            subject_name = subject.text.strip()
+            subject_url = subject["href"]
+            courses_data[course_name].append({"name": subject_name, "url": subject_url})
 
-viewed_links = set()
+    info_elems = soup.find_all('li', class_="level1")
+    for info_elem in info_elems:
+        course_name = info_elem.find("div", class_="li").text.strip()
+        subjects = info_elem.find_all("a", class_="wikilink1")
+        for subject in subjects:
+            subject_name = subject.text.strip()
+            subject_url = subject["href"]
+            courses_data["info"].append({"name": subject_name, "url": subject_url})
+    return courses_data
 
-courses_data = {}
-course_elems = soup.find_all('li', class_=["level1 node", "level2 node", "level3 node"])
-courses_data["info"] = []
-for course_elem in course_elems:
-    course_name = course_elem.find("div", class_="li").text.strip()
-    subjects = course_elem.find_all("a", class_="wikilink1")
-    courses_data[course_name] = []
-    for subject in subjects:
-        subject_name = subject.text.strip()
-        subject_url = subject["href"]
-        courses_data[course_name].append({"name": subject_name, "url": subject_url})
-
-
-info_elems = soup.find_all('li', class_="level1")
-for info_elem in info_elems:
-    course_name = info_elem.find("div", class_="li").text.strip()
-    subjects = info_elem.find_all("a", class_="wikilink1")
-    for subject in subjects:
-        subject_name = subject.text.strip()
-        subject_url = subject["href"]
-        courses_data["info"].append({"name": subject_name, "url": subject_url})
 
 def find_date(url):
     response = requests.get("https://se.moevm.info" + url)
@@ -83,16 +84,22 @@ def find_date(url):
             last_modified_text = last_modified_text.strip()
             return last_modified_text
 
-for i in courses_data:
-    for j in courses_data[i]:
-        link = j["url"][:j["url"].rfind(":")]
-        date_mod = find_date(j["url"])
-        data = recursive_scrape(j, viewed_links, link)
-        j["date"] = date_mod
-        j["data"] = data
 
-courses_data["date"] = find_date("/doku.php")
+def create_data(courses_data, max_depth):
+    for courses in courses_data:
+        for subject in courses_data[courses]:
+            link = subject["url"][:subject["url"].rfind(":")]
+            date_mod = find_date(subject["url"])
+            data = recursive_scrape(subject, viewed_links, link, 0, max_depth)
+            subject["date"] = date_mod
+            subject["data"] = data
+    courses_data["date"] = find_date("/doku.php")
+
+
+viewed_links = set()
+courses_data = read_courses()
+max_depth = 7
+create_data(courses_data, max_depth)
 
 with open("data.json", "w", encoding="utf-8") as json_file:
     json.dump(courses_data, json_file, ensure_ascii=False, indent=4)
-
