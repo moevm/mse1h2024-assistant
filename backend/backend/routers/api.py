@@ -14,4 +14,9 @@ def root():
 
 @router.post("/send_text_request")
 def handle_text_request(parameters: TextRequest):
-    return parameters
+    return {
+        "course": parameters.course,
+        "subject": parameters.subject,
+        "text": parameters.text,
+        "is_ok": "ok"
+    }
