@@ -8,8 +8,11 @@
   },
   "dependencies": {
     "@vue/compiler-sfc": "^3.4.19",
+    "axios": "^1.6.7",
     "core-js": "^3.8.3",
-    "vue": "^3.4.19"
+    "vue": "^3.4.19",
+    "vue-router": "^4.3.0",
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~5.0.0",
