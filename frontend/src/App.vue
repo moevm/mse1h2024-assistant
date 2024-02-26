@@ -1,15 +1,16 @@
 <template>
-  <HelloWorld msg="Test App"/>
+  <div id="login"><h1>Logo</h1></div>
+  <div id="nav">
+    <router-link to="/"></router-link>
+  </div>
+  <router-view/>
+  <div id="question"><h1>?</h1></div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 
 export default {
   name: 'App',
-  components: {
-    HelloWorld
-  }
 }
 </script>
 
