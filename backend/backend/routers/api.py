@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from backend.dto.request import *
+from backend.models.request import TextRequest
 
 router = APIRouter(
     prefix='/api',
