@@ -1,3 +1,4 @@
+import datetime
 import json
 import sys
 
@@ -80,9 +81,12 @@ def find_date(url):
         doc_info_text = doc_info_elem.get_text()
         last_modified_index = doc_info_text.find('Last modified:')
         if last_modified_index != -1:
-            last_modified_text = doc_info_text[last_modified_index + len('Last modified:'):]
-            last_modified_text = last_modified_text.strip()
-            return last_modified_text
+            last_modified_text = doc_info_text[last_modified_index + len('Last modified:'):].strip()
+            split_text = last_modified_text.split(' ')
+            date = split_text[0] + " " + split_text[1]
+            date_format = "%Y/%m/%d %H:%M"
+            timestamp = datetime.datetime.strptime(date, date_format)
+            return json.dumps(timestamp.strftime(date_format))
 
 
 def create_data(courses_data, max_depth):
@@ -98,7 +102,7 @@ def create_data(courses_data, max_depth):
 
 viewed_links = set()
 courses_data = read_courses()
-max_depth = 7
+max_depth = 10
 create_data(courses_data, max_depth)
 
 with open("data.json", "w", encoding="utf-8") as json_file:
