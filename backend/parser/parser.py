@@ -33,20 +33,19 @@ def recursive_scrape(page, viewed_links, li, depth, max_depth):
         return []
 
     result = []
-    if page["url"] not in viewed_links:
-        viewed_links.add(page["url"])
-        page_data = scrape_page(page['url'], viewed_links)
-        if page_data is not None:
-            result.append(page_data['text'])
-            if 'links' in page_data:
-                for link in page_data["links"]:
-                    if li in link:
-                        result.extend(
-                            recursive_scrape({'name': '', 'url': link}, viewed_links, li, depth + 1, max_depth))
+    viewed_links.add(page["url"])
+    page_data = scrape_page(page['url'], viewed_links)
+    if page_data is not None:
+        result.append(page_data['text'])
+        if 'links' in page_data:
+            for link in page_data["links"]:
+                if li in link:
+                    result.extend(
+                        recursive_scrape({'name': '', 'url': link}, viewed_links, li, depth + 1, max_depth))
     return result
 
 
-def read_courses():
+def read_courses(viewed_links):
     url = "https://se.moevm.info/doku.php"
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -60,6 +59,7 @@ def read_courses():
         for subject in subjects:
             subject_name = subject.text.strip()
             subject_url = subject["href"]
+            viewed_links.add(subject_url)
             courses_data[course_name].append({"name": subject_name, "url": subject_url})
 
     info_elems = soup.find_all('li', class_="level1")
@@ -69,6 +69,7 @@ def read_courses():
         for subject in subjects:
             subject_name = subject.text.strip()
             subject_url = subject["href"]
+            viewed_links.add(subject_url)
             courses_data["info"].append({"name": subject_name, "url": subject_url})
     return courses_data
 
@@ -89,7 +90,7 @@ def find_date(url):
             return json.dumps(timestamp.strftime(date_format))
 
 
-def create_data(courses_data, max_depth):
+def create_data(courses_data, viewed_links, max_depth):
     for courses in courses_data:
         for subject in courses_data[courses]:
             link = subject["url"][:subject["url"].rfind(":")]
@@ -101,9 +102,9 @@ def create_data(courses_data, max_depth):
 
 
 viewed_links = set()
-courses_data = read_courses()
-max_depth = 10
-create_data(courses_data, max_depth)
+courses_data = read_courses(viewed_links)
+max_depth = 2
+create_data(courses_data, viewed_links, max_depth)
 
 with open("data.json", "w", encoding="utf-8") as json_file:
     json.dump(courses_data, json_file, ensure_ascii=False, indent=4)
