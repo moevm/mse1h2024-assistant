@@ -2,15 +2,18 @@ import datetime
 import json
 import sys
 
+import unicodedata
+
 sys.setrecursionlimit(1000000000)
 import requests
 from bs4 import BeautifulSoup
-
+import os
 
 def check_links(links, viewed_links):
     new_links = []
     for i in links:
-        if i not in viewed_links and "?do=login&sectok=" not in i and "?do=diff&rev" not in i and "do=media" not in i:
+        if (i not in viewed_links and "?do=login&sectok=" not in i and "?do=diff&rev" not in i and "do=media" not in i
+                and not i.endswith(('.jpg', '.png', '.gif', '.jpeg', '.pdf', '.doc'))):
             new_links.append(i)
     return new_links
 
@@ -18,11 +21,13 @@ def check_links(links, viewed_links):
 def scrape_page(url, viewed_links):
     try:
         response = requests.get("https://se.moevm.info" + url)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        text_data = soup.get_text()
-        links = soup.find_all('a', href=True)
-        links = check_links([link['href'] for link in links if link['href'].startswith('/')], viewed_links)
-        return {'url': url, 'text': text_data, 'links': links}
+        if not os.path.splitext(url)[1].lower() in ['.jpg', '.png', '.gif', '.jpeg', '.pdf', '.doc']:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            text_data = soup.get_text()
+            text_data = unicodedata.normalize('NFKD', text_data).encode('ascii', 'ignore').decode('utf-8', 'ignore')
+            links = soup.find_all('a', href=True)
+            links = check_links([link['href'] for link in links if link['href'].startswith('/')], viewed_links)
+            return {'url': url, 'text': text_data, 'links': links}
     except Exception as e:
         print("An error occurred while scraping the page:", e)
         return None
@@ -39,8 +44,9 @@ def recursive_scrape(page, viewed_links, depth, max_depth):
         result.append(page_data['text'])
         if 'links' in page_data:
             for link in page_data["links"]:
-                result.extend(
-                    recursive_scrape({'name': '', 'url': link}, viewed_links, depth + 1, max_depth))
+                if "https://se.moevm.info/doku.php" in link:
+                    result.extend(
+                        recursive_scrape({'name': '', 'url': link}, viewed_links, depth + 1, max_depth))
     return result
 
 
@@ -105,25 +111,5 @@ courses_data = read_courses(viewed_links)
 max_depth = 2
 create_data(courses_data, viewed_links, max_depth)
 
-# with open("./data/data.json", "w", encoding="utf-8") as json_file:
-#     json.dump(courses_data, json_file, ensure_ascii=False, indent=4)
-
-chunk_size = 40 * 1024 * 1024
-
-chunks = []
-current_chunk = []
-current_chunk_size = 0
-for course_id, course_data in courses_data.items():
-    course_data_size = len(json.dumps(course_data, ensure_ascii=False, indent=4).encode('utf-8'))
-    if current_chunk_size + course_data_size > chunk_size:
-        chunks.append(current_chunk)
-        current_chunk = []
-        current_chunk_size = 0
-    current_chunk.append((course_id, course_data))
-    current_chunk_size += course_data_size
-if current_chunk:
-    chunks.append(current_chunk)
-
-for i, chunk in enumerate(chunks):
-    with open(f"./data/data_{i}.json", "w", encoding="utf-8") as chunk_file:
-        json.dump(dict(chunk), chunk_file, ensure_ascii=False, indent=4)
+with open("./data.json", "w", encoding="utf-8") as json_file:
+    json.dump(courses_data, json_file, ensure_ascii=False, indent=4)
