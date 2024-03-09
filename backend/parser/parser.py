@@ -2,7 +2,7 @@ import datetime
 import json
 import sys
 
-sys.setrecursionlimit(1000000)
+sys.setrecursionlimit(1000000000)
 import requests
 from bs4 import BeautifulSoup
 
