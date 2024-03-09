@@ -108,7 +108,7 @@ create_data(courses_data, viewed_links, max_depth)
 # with open("./data/data.json", "w", encoding="utf-8") as json_file:
 #     json.dump(courses_data, json_file, ensure_ascii=False, indent=4)
 
-chunk_size = 100 * 1024 * 1024
+chunk_size = 40 * 1024 * 1024
 
 chunks = []
 current_chunk = []
