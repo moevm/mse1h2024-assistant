@@ -39,9 +39,8 @@ def recursive_scrape(page, viewed_links, li, depth, max_depth):
         result.append(page_data['text'])
         if 'links' in page_data:
             for link in page_data["links"]:
-                if li in link:
-                    result.extend(
-                        recursive_scrape({'name': '', 'url': link}, viewed_links, li, depth + 1, max_depth))
+                result.extend(
+                    recursive_scrape({'name': '', 'url': link}, viewed_links, li, depth + 1, max_depth))
     return result
 
 
@@ -68,9 +67,10 @@ def read_courses(viewed_links):
         subjects = info_elem.find_all("a", class_="wikilink1")
         for subject in subjects:
             subject_name = subject.text.strip()
-            subject_url = subject["href"]
-            viewed_links.add(subject_url)
-            courses_data["info"].append({"name": subject_name, "url": subject_url})
+            if subject_name != "Программирование" and subject_name != "Информатика":
+                subject_url = subject["href"]
+                viewed_links.add(subject_url)
+                courses_data["info"].append({"name": subject_name, "url": subject_url})
     return courses_data
 
 
