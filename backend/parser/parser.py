@@ -28,7 +28,7 @@ def scrape_page(url, viewed_links):
         return None
 
 
-def recursive_scrape(page, viewed_links, li, depth, max_depth):
+def recursive_scrape(page, viewed_links, depth, max_depth):
     if depth >= max_depth:
         return []
 
@@ -40,7 +40,7 @@ def recursive_scrape(page, viewed_links, li, depth, max_depth):
         if 'links' in page_data:
             for link in page_data["links"]:
                 result.extend(
-                    recursive_scrape({'name': '', 'url': link}, viewed_links, li, depth + 1, max_depth))
+                    recursive_scrape({'name': '', 'url': link}, viewed_links, depth + 1, max_depth))
     return result
 
 
@@ -93,9 +93,8 @@ def find_date(url):
 def create_data(courses_data, viewed_links, max_depth):
     for courses in courses_data:
         for subject in courses_data[courses]:
-            link = subject["url"][:subject["url"].rfind(":")]
             date_mod = find_date(subject["url"])
-            data = recursive_scrape(subject, viewed_links, link, 0, max_depth)
+            data = recursive_scrape(subject, viewed_links,0, max_depth)
             subject["date"] = date_mod
             subject["data"] = data
     courses_data["date"] = find_date("/doku.php")
