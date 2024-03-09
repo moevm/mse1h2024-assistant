@@ -105,5 +105,25 @@ courses_data = read_courses(viewed_links)
 max_depth = 2
 create_data(courses_data, viewed_links, max_depth)
 
-with open("data.json", "w", encoding="utf-8") as json_file:
-    json.dump(courses_data, json_file, ensure_ascii=False, indent=4)
+# with open("./data/data.json", "w", encoding="utf-8") as json_file:
+#     json.dump(courses_data, json_file, ensure_ascii=False, indent=4)
+
+chunk_size = 100 * 1024 * 1024
+
+chunks = []
+current_chunk = []
+current_chunk_size = 0
+for course_id, course_data in courses_data.items():
+    course_data_size = len(json.dumps(course_data, ensure_ascii=False, indent=4).encode('utf-8'))
+    if current_chunk_size + course_data_size > chunk_size:
+        chunks.append(current_chunk)
+        current_chunk = []
+        current_chunk_size = 0
+    current_chunk.append((course_id, course_data))
+    current_chunk_size += course_data_size
+if current_chunk:
+    chunks.append(current_chunk)
+
+for i, chunk in enumerate(chunks):
+    with open(f"./data/data_{i}.json", "w", encoding="utf-8") as chunk_file:
+        json.dump(dict(chunk), chunk_file, ensure_ascii=False, indent=4)
