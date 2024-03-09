@@ -94,7 +94,7 @@ def create_data(courses_data, viewed_links, max_depth):
     for courses in courses_data:
         for subject in courses_data[courses]:
             date_mod = find_date(subject["url"])
-            data = recursive_scrape(subject, viewed_links,0, max_depth)
+            data = recursive_scrape(subject, viewed_links, 0, max_depth)
             subject["date"] = date_mod
             subject["data"] = data
     courses_data["date"] = find_date("/doku.php")
