@@ -8,6 +8,7 @@ sys.setrecursionlimit(1000000000)
 import requests
 from bs4 import BeautifulSoup
 import os
+import gzip
 
 def check_links(links, viewed_links):
     new_links = []
@@ -113,3 +114,7 @@ create_data(courses_data, viewed_links, max_depth)
 
 with open("./data.json", "w", encoding="utf-8") as json_file:
     json.dump(courses_data, json_file, ensure_ascii=False, indent=4)
+
+with open("./data.json", "rb") as f_in:
+    with gzip.open("./data.json.gz", "wb") as f_out:
+        f_out.writelines(f_in)
