@@ -1,10 +1,12 @@
 FROM node:20.11.1-alpine as build-stage
 
-WORKDIR /app
+WORKDIR /frontend
 
-COPY . .
+COPY . /frontend
 
 RUN npm install
+
+RUN chmod -R a+x node_modules
 
 RUN npm run build
 
