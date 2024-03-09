@@ -1,7 +1,6 @@
 import datetime
 import json
 import sys
-
 import unicodedata
 
 sys.setrecursionlimit(1000000000)
@@ -9,6 +8,7 @@ import requests
 from bs4 import BeautifulSoup
 import os
 import gzip
+
 
 def check_links(links, viewed_links):
     new_links = []
@@ -25,7 +25,7 @@ def scrape_page(url, viewed_links):
         if not os.path.splitext(url)[1].lower() in ['.jpg', '.png', '.gif', '.jpeg', '.pdf', '.doc']:
             soup = BeautifulSoup(response.text, 'html.parser')
             text_data = soup.get_text()
-            text_data = unicodedata.normalize('NFKD', text_data).encode('ascii', 'ignore').decode('utf-8', 'ignore')
+            text_data = unicodedata.normalize('NFKD', text_data).encode('utf-8', 'ignore').decode('utf-8', 'ignore')
             links = soup.find_all('a', href=True)
             links = check_links([link['href'] for link in links if link['href'].startswith('/')], viewed_links)
             return {'url': url, 'text': text_data, 'links': links}
@@ -45,7 +45,7 @@ def recursive_scrape(page, viewed_links, depth, max_depth):
         result.append(page_data['text'])
         if 'links' in page_data:
             for link in page_data["links"]:
-                if "https://se.moevm.info/doku.php" in link:
+                if "/doku.php" in link:
                     result.extend(
                         recursive_scrape({'name': '', 'url': link}, viewed_links, depth + 1, max_depth))
     return result
@@ -118,3 +118,4 @@ with open("./data.json", "w", encoding="utf-8") as json_file:
 with open("./data.json", "rb") as f_in:
     with gzip.open("./data.json.gz", "wb") as f_out:
         f_out.writelines(f_in)
+
