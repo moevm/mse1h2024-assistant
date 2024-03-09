@@ -7,7 +7,6 @@ sys.setrecursionlimit(1000000000)
 import requests
 from bs4 import BeautifulSoup
 import os
-import gzip
 
 
 def check_links(links, viewed_links):
