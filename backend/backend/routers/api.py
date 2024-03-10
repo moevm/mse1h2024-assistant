@@ -8,7 +8,7 @@ router = APIRouter(
     tags=['api'],
 )
 
-modelClient = OllamaClient("llama2")
+modelClient = OllamaClient("mistral")
 dirname = os.path.dirname(__file__)
 
 @router.get("/")

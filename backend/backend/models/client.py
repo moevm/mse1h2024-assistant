@@ -4,7 +4,7 @@ import json
 class OllamaClient:
     def __init__(self, model):
         self.model = model
-        self.context = "Ты умеешь говорить только на русском языке. Для ответа используй следующую информацию: "
+        self.context = "Ты русскоязычный бот и отвечаешь только на русском языке. Для ответа используй следующую информацию: "
 
     #Метод, который ищет в json файле раздел с определённым названием и топиком, добавляет его в контекст 
     def readContextFromFile(self, file, titleOfChapter, titleOfTopic):
@@ -43,7 +43,7 @@ class OllamaClient:
             "content": message
         }
 
-    #Метод, который отправляет промпт модели, получает ответ и выводит его
+    #Метод, который отправляет промпт модели с учётом контекста и возвращает ответ 
     def sendPrompt(self, userMessage):
         response = ollama.chat(model=self.model, messages=[
             self.__createPromt(self.context, "system"),
@@ -52,5 +52,9 @@ class OllamaClient:
         options={
             "temperature": 0
         })
+
+        print(self.context)
+
+        self.clearContext()
 
         return(response['message']['content'])
