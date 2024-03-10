@@ -1,14 +1,12 @@
 import uvicorn
-
-HOST = '0.0.0.0'
-PORT = 5000
+from backend.settings import config
 
 
 def _run_uvicorn():
     uvicorn.run(
         app='backend.main:app',
-        host=HOST,
-        port=PORT,
+        host=config.host,
+        port=config.port,
         workers=1,
     )
 
