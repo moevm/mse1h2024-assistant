@@ -1,11 +1,15 @@
 from fastapi import APIRouter
 from backend.models.request import TextRequest
+from backend.models.client import OllamaClient
+import os
 
 router = APIRouter(
     prefix='/api',
     tags=['api'],
 )
 
+modelClient = OllamaClient("llama2")
+dirname = os.path.dirname(__file__)
 
 @router.get("/")
 def root():
@@ -20,3 +24,10 @@ def handle_text_request(parameters: TextRequest):
         "text": parameters.text,
         "is_ok": "ok"
     }
+
+
+@router.get("/ask_model_by_text_request")
+def ask_model_by_text(course : str, subject : str, text : str):
+    modelClient.readContextFromFile(os.path.join(dirname, '../../parser/new_data.json'), course, subject)
+    answer = modelClient.sendPrompt(text)
+    return answer

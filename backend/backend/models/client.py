@@ -17,7 +17,7 @@ class OllamaClient:
                         if(topic["name"] == titleOfTopic): 
                             resultContext = topic["data"]
                             break          
-                        
+
                     if(resultContext == ""): 
                         print("This topic doesn't exist")
                     else: 
@@ -27,6 +27,10 @@ class OllamaClient:
 
         except:
             print("This file couldn't be found") 
+
+    #Метод, который заносит в контекст информацию, которую пользователь подаёт в параметры
+    def readContextFromParametr(self, context):
+        self.context += str(context) 
 
     #Метод, который обнуляет контекст
     def clearContext(self):
@@ -41,22 +45,12 @@ class OllamaClient:
 
     #Метод, который отправляет промпт модели, получает ответ и выводит его
     def sendPrompt(self, userMessage):
-        print(len(self.context))
-
         response = ollama.chat(model=self.model, messages=[
             self.__createPromt(self.context, "system"),
             self.__createPromt(userMessage, "user")
-        ], 
+        ],
         options={
             "temperature": 0
         })
 
-        print(response['message']['content'])
-
-def main():
-    testModel = OllamaClient("llama2")
-    testModel.readContextFromFile("/home/azazzzel/mse1h2024-assistant/backend/parser/new_data.json", "info", "Регистрация первокурсников")
-    testModel.sendPrompt("Какие действия по регистрации на moemv надо выполнить?")
-
-if __name__ == "__main__":
-    main()
+        return(response['message']['content'])
