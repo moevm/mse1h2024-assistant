@@ -1,9 +1,6 @@
 import datetime
 import json
-import sys
 import unicodedata
-
-sys.setrecursionlimit(1000000000)
 import requests
 from bs4 import BeautifulSoup
 import os
@@ -67,13 +64,14 @@ def read_courses(viewed_links):
             viewed_links.add(subject_url)
             courses_data[course_name].append({"name": subject_name, "url": subject_url})
 
+    first_courses = [i["name"] for i in courses_data["1 курс"]]
     info_elems = soup.find_all('li', class_="level1")
     for info_elem in info_elems:
         course_name = info_elem.find("div", class_="li").text.strip()
         subjects = info_elem.find_all("a", class_="wikilink1")
         for subject in subjects:
             subject_name = subject.text.strip()
-            if subject_name != "Программирование" and subject_name != "Информатика":
+            if subject_name not in first_courses:
                 subject_url = subject["href"]
                 viewed_links.add(subject_url)
                 courses_data["info"].append({"name": subject_name, "url": subject_url})
@@ -113,5 +111,3 @@ create_data(courses_data, viewed_links, max_depth)
 
 with open("./data.json", "w", encoding="utf-8") as json_file:
     json.dump(courses_data, json_file, ensure_ascii=False, indent=4)
-
-
