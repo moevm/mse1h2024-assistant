@@ -1,24 +1,43 @@
 <template>
-  <p>Выберите курс</p>
-  <select id="course" name="course">
-    <option value="course1">1</option>
-    <option value="course2">2</option>
-  </select>
-  <p>Выберите предмет</p>
-  <select id="subject" name="subject">
-    <option value="subject1">Программирование</option>
-    <option value="subject2">Информатика</option>
-  </select>
-  <button @click="start">Начать</button>
+  <div>
+    <v-card class="login_card">
+      <v-select
+        label="Выберите номер курса"
+        :items="['1', '2', '3', '4', '5', '6']"
+        variant="outlined"
+        v-model="course"
+      />
+      <v-select
+        label="Выберите предмет"
+        :items="['Программирование', 'Информатика']"
+        variant="outlined"
+        :disabled="this.course.length < 1"
+        v-model="subject"
+      />
+      <v-btn 
+        @click="start" 
+        class="login_btn"
+        :disabled="this.subject.length < 1 || this.course.length < 1"
+      >
+        Начать
+      </v-btn>
+    </v-card>
+  </div>
 </template>
 
 <script>
 export default {
   name: 'Login',
+  data:() => {
+    return {
+      course: '',
+      subject: ''
+    }
+  },
   methods: {
     start(){
-      this.$store.commit('setCourse', document.getElementById("course").options[document.getElementById("course").selectedIndex].text)
-      this.$store.commit('setSubject', document.getElementById("subject").options[document.getElementById("subject").selectedIndex].text)
+      this.$store.commit('setCourse', this.course);
+      this.$store.commit('setSubject', this.subject);
       console.log(this.$store.getters.getState)
       this.$router.push('/chat');
     }
@@ -27,5 +46,16 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
+.login_card{
+    width: 15%;
+    padding: 30px;
+    margin: auto;
+    background-color: $card-bcg-color;
+    text-align: center;
+}
+.login_btn{
+  background-color: $login-btn-color;
+  width: 50%;
+  font-weight: bold;
+}
 </style>
