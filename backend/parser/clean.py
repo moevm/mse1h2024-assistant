@@ -1,19 +1,8 @@
-from nltk.tokenize import sent_tokenize, word_tokenize
+import re
 import json
 
-class KeyWords:
-    def __init__(self, begin, end=None):
-        self.begin = begin
-        self.end = end    
-
-def cut(text, key_words):
-    if text.find(key_words.begin) == -1:
-        return text
-    elif not key_words.end:
-        return text[:text.find(key_words.begin)]
-    else:
-        return text[:text.find(key_words.begin)] + text[text.find(key_words.end) + len(key_words.end):]
-
+def cut(text, regex):
+    return " ".join(re.split(regex, text, maxsplit=0))
 
 with open("data.json", encoding="utf-8") as json_file:
     data = json.load(json_file)
@@ -28,18 +17,23 @@ for label in keys:
         except TypeError:
             break
 
-        for i in range(len(data[label][num]['data']) - 2):
+        for i in range(len(data[label][num]['data'])):
             
-            text = " ".join(word_tokenize(data[label][num]['data'][i]))
+            text = " ".join(data[label][num]['data'][i].split("\n"))
+
+            regex = [r'\[se.moevm.info\][\s\S]*?You are here: (\S+\s)*', r'Recent Changes[\s\S]*', r'Last modified[\s\S]*', r'Backlinks[\s\S]*', r'Sidebar[\s\S]*?Автоматизация учебных задач', r'Sitemap [\s\S]*', r'[\S]+:(?!\/)[\S]+', r'Table of Contents', r'[\S]*.txt', r'Таблица[\s\S]* \$ [\S\s]* \$']
             
-            key_words = [KeyWords("Recent Changes "), KeyWords("Last modified "), KeyWords("Backlinks "), KeyWords("Sidebar ", "Автоматизация учебных задач "), KeyWords("[ se.moevm.info ]", "МОЭВМ Вики »"), KeyWords("Sitemap ")]
-            
-            for elem in key_words:
+            for elem in regex:
                 text = cut(text, elem)
+
+            if text.find("✎") != -1:
+                break
+            elif text.find("Permission Denied") != -1 or text.find("This topic does not exist yet") != -1:
+                continue
             
             all_text.append(text)
-        data[label][num]['data'] = all_text
-    
+        data[label][num]['data'] = cut(" ".join(all_text), r'\s+')
+
 with open("new_data.json", "w", encoding="utf-8") as w_file:
         json.dump(data, w_file, ensure_ascii=False, indent=4)
         
