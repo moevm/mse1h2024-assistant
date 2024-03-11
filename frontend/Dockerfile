@@ -1,16 +1,18 @@
 FROM node:20.11.1-alpine as build-stage
 
-WORKDIR /app
+WORKDIR /frontend
 
-COPY . .
+COPY . /frontend
 
 RUN npm install
+
+RUN chmod -R a+x node_modules
 
 RUN npm run build
 
 FROM nginx:stable-alpine as production-stage
 
-COPY --from=build-stage /app/dist /usr/share/nginx/html
+COPY --from=build-stage /frontend/dist /usr/share/nginx/html
 
 COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
 
