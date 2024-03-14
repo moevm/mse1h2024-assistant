@@ -8,8 +8,9 @@
     </div>
     <router-view/>
     <v-btn
-      class="help_btn" 
-      @click="help" 
+      id="help_btn"
+      class="button"
+      @click="help"
       icon="mdi-help"
     />
   </div>
@@ -38,8 +39,16 @@ export default {
   font-size: 30px;
   padding-left: 10px;
 }
-.help_btn{
-  float: right;
+#help_btn{
+  position: fixed;
+  bottom: 0;
+  right: 0;
   margin: 10px;
+  background-color: transparent;
 }
+
+.button:hover {
+  transform: scale(1.1);
+}
+
 </style>
