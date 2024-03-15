@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card class="login_card">
+    <v-card class="login_card" >
       <v-select
         label="Выберите номер курса"
         :items="['1', '2', '3', '4', '5', '6']"
@@ -14,9 +14,9 @@
         :disabled="this.course.length < 1"
         v-model="subject"
       />
-      <v-btn 
-        @click="start" 
-        class="login_btn"
+      <v-btn
+        @click="start"
+        class="login_btn, button"
         :disabled="this.subject.length < 1 || this.course.length < 1"
       >
         Начать
@@ -47,15 +47,19 @@ export default {
 
 <style scoped lang="scss">
 .login_card{
-    width: 15%;
-    padding: 30px;
-    margin: auto;
-    background-color: $card-bcg-color;
-    text-align: center;
+  width: 35%;
+  padding: 30px;
+  margin: auto;
+  background-color: transparent;
+  text-align: center;
+  box-shadow: none;
 }
 .login_btn{
-  background-color: $login-btn-color;
   width: 50%;
   font-weight: bold;
+  background-color: transparent;
 }
 </style>
+
+
+
