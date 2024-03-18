@@ -34,7 +34,7 @@ class OllamaClient:
 
     #Метод, который обнуляет контекст
     def clearContext(self):
-        self.context = "Ты умеешь говорить только на русском языке. Для ответа используй следующую информацию: " 
+        self.context = "Ты русскоязычный бот и отвечаешь только на русском языке. Для ответа используй следующую информацию: " 
 
     #Метод, который создаёт промпт, указывая в нём сообщение и роль: system или user
     def __createPromt(self, message="", role="user"):
@@ -52,8 +52,6 @@ class OllamaClient:
         options={
             "temperature": 0
         })
-
-        print(self.context)
 
         self.clearContext()
 
