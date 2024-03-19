@@ -10,10 +10,14 @@
         </v-list-item>
       </v-card-text>
 
-      <v-card-actions style="padding: 0; justify-content: space-between">
+      <v-card-actions class="d-flex justify-center" style="padding: 0; margin-right: 8px; height: 72px;">
         <v-text-field v-show="text_visible" v-model="newMessage" label="Сообщение" style="margin: 8px" hide-details></v-text-field>
         <v-btn class="button" v-show="send_text_visible" @click="send_message" color="primary" icon="mdi-send-variant-outline"></v-btn>
-        <v-btn class="button" v-show="open_voice_visible" @click="open_voice" color="primary" style="margin: 0" icon="mdi-microphone-outline"></v-btn>
+        <v-btn class="button" v-show="open_voice_visible" @click="start_voice" color="primary" style="margin: 0" icon="mdi-microphone-outline"></v-btn>
+<!--        <v-card-text v-show="player_visible" style="padding: 0" class="max-content mx-auto">-->
+          <audio v-show="player_visible" controls ref="audioPlayer" :src="audioSrc" type="audio/mpeg"></audio>
+<!--        </v-card-text>-->
+        <v-btn class="button" v-show="stop_voice_visible" @click="stop_voice" color="primary" style="margin: 0" icon="mdi-pause"></v-btn>
         <v-btn class="button" v-show="send_voice_visible" @click="send_voice" color="primary" icon="mdi-send-variant-outline"></v-btn>
         <v-btn class="button" v-show="delete_voice_visible" @click="delete_voice" color="primary" icon="mdi-delete-outline"></v-btn>
       </v-card-actions>
@@ -25,6 +29,8 @@
 
 <script>
 import {post_request} from "@/requests"
+import {tr} from "vuetify/locale";
+import {instance} from "@/main";
 
 export default {
   data() {
@@ -34,6 +40,11 @@ export default {
       open_voice_visible: true,
       send_voice_visible: false,
       delete_voice_visible: false,
+      player_visible: false,
+      stop_voice_visible: false,
+      audioSrc: null,
+      mediaRecorder: null,
+      chunks: [],
       messages: [
         { content: 'Привет, чем могу помочь?', me: false, created_at: this.get_date() },
       ],
@@ -74,38 +85,78 @@ export default {
       this.$router.push('/');
     },
 
-    open_voice() {
+    start_voice() {
+      this.open_voice()
+      this.audioSrc = null
+
+      navigator.mediaDevices.getUserMedia({ audio: true })
+          .then(stream => {
+            this.mediaRecorder = new MediaRecorder(stream);
+            this.mediaRecorder.ondataavailable = event => {
+              this.chunks.push(event.data);
+            };
+            this.mediaRecorder.onstop = () => {
+                const blob = new Blob(this.chunks, {type: 'audio/mpeg'});
+                this.audioSrc = URL.createObjectURL(blob);
+                this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                this.mediaRecorder = null;
+                this.chunks = [];
+            };
+            this.mediaRecorder.start();
+          })
+          .catch(error => {
+            console.error('Error accessing microphone:', error);
+          });
+    },
+
+    open_voice(){
       this.text_visible = false
       this.send_text_visible = false
       this.open_voice_visible = false
-
       this.send_voice_visible = true
       this.delete_voice_visible = true
+      this.player_visible = true
+      this.stop_voice_visible = true
     },
 
     close_voice() {
       this.text_visible = true
       this.send_text_visible = true
       this.open_voice_visible = true
-
       this.send_voice_visible = false
       this.delete_voice_visible = false
+      this.player_visible = false
+      this.stop_voice_visible = false
     },
 
     send_voice() {
-
-      //Переделать
       this.create_message("Голосовое отправлено", true)
       this.close_voice()
       post_request(Number(this.$store.getters.getState.course),
           this.$store.getters.getState.subject,
           "Голосовое отправлено")
           .then(res => this.create_message(res, false))
-      //Передалать
+
+      if(this.mediaRecorder) this.mediaRecorder.stop();
+
+      // TODO после написания серверной части перенести в requests.js, передается формат BLOB
+      // const formData = new FormData();
+      // formData.append('voice', new Blob(this.chunks, {type: 'audio/mpeg'}), 'recorded_audio.wav');
+      // instance.post('your_server_url', formData, {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data'
+      //   }
+      // })
+    },
+
+    stop_voice(){
+      this.stop_voice_visible = false
+      this.mediaRecorder.stop();
     },
 
     delete_voice() {
       this.close_voice()
+      if(this.mediaRecorder) this.mediaRecorder.stop();
     },
   }
 }
@@ -116,7 +167,7 @@ export default {
 #chat {
   position: relative;
   background: none;
-  width: 45%;
+  min-width: 50%;
   height: 93vh;
 }
 #messages {
