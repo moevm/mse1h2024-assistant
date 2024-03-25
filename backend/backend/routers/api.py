@@ -8,7 +8,7 @@ router = APIRouter(
     tags=['api'],
 )
 
-modelClient = OllamaClient("yarn-mistral:7b-64k")
+modelClient = OllamaClient("mistral")
 dirname = os.path.dirname(__file__)
 
 @router.get("/")
@@ -31,3 +31,4 @@ def ask_model_by_text(course : str, subject : str, text : str):
     modelClient.readContextFromFile(os.path.join(dirname, '../../parser/new_data.json'), course, subject)
     answer = modelClient.sendPrompt(text)
     return answer
+
