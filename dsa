@@ -1,13 +1,0 @@
-[1mdiff --git a/backend/backend/routers/api.py b/backend/backend/routers/api.py[m
-[1mindex ef3ba88..3f73ddc 100644[m
-[1m--- a/backend/backend/routers/api.py[m
-[1m+++ b/backend/backend/routers/api.py[m
-[36m@@ -8,7 +8,7 @@[m [mrouter = APIRouter([m
-     tags=['api'],[m
- )[m
- [m
-[31m-modelClient = OllamaClient("mistral")[m
-[32m+[m[32mmodelClient = OllamaClient("yarn-mistral:7b-64k")[m[41m[m
- dirname = os.path.dirname(__file__)[m
- [m
- @router.get("/")[m
