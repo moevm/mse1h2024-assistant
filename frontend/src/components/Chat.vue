@@ -10,13 +10,14 @@
         </v-list-item>
       </v-card-text>
 
+
+
       <v-card-actions class="d-flex justify-center" style="padding: 0; margin-right: 8px; height: 72px;">
         <v-text-field v-show="text_visible" v-model="newMessage" label="Сообщение" style="margin: 8px" hide-details></v-text-field>
         <v-btn class="button" v-show="send_text_visible" @click="send_message" color="primary" icon="mdi-send-variant-outline"></v-btn>
         <v-btn class="button" v-show="open_voice_visible" @click="start_voice" color="primary" style="margin: 0" icon="mdi-microphone-outline"></v-btn>
-<!--        <v-card-text v-show="player_visible" style="padding: 0" class="max-content mx-auto">-->
-          <audio v-show="player_visible" controls ref="audioPlayer" :src="audioSrc" type="audio/mpeg"></audio>
-<!--        </v-card-text>-->
+        <div v-show="isRunning" style="margin-right: 5px">Запись: {{ formatTime }}</div>
+        <audio v-show="player_visible" controls ref="audioPlayer" :src="audioSrc" type="audio/mpeg"></audio>
         <v-btn class="button" v-show="stop_voice_visible" @click="stop_voice" color="primary" style="margin: 0" icon="mdi-pause"></v-btn>
         <v-btn class="button" v-show="send_voice_visible" @click="send_voice" color="primary" icon="mdi-send-variant-outline"></v-btn>
         <v-btn class="button" v-show="delete_voice_visible" @click="delete_voice" color="primary" icon="mdi-delete-outline"></v-btn>
@@ -45,10 +46,21 @@ export default {
       audioSrc: null,
       mediaRecorder: null,
       chunks: [],
+      isRunning: false,
+      time: 0,
+      timer: null,
       messages: [
         { content: 'Привет, чем могу помочь?', me: false, created_at: this.get_date() },
       ],
       newMessage: ''
+    }
+  },
+
+  computed: {
+    formatTime() {
+      const minutes = Math.floor(this.time / 60);
+      const seconds = (this.time % 60).toFixed(1); // Форматируем с точностью до одного знака после запятой
+      return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     }
   },
 
@@ -86,6 +98,7 @@ export default {
     },
 
     start_voice() {
+      this.startTimer()
       this.open_voice()
       this.audioSrc = null
 
@@ -115,8 +128,8 @@ export default {
       this.open_voice_visible = false
       this.send_voice_visible = true
       this.delete_voice_visible = true
-      this.player_visible = true
       this.stop_voice_visible = true
+      this.isRunning = true
     },
 
     close_voice() {
@@ -127,6 +140,7 @@ export default {
       this.delete_voice_visible = false
       this.player_visible = false
       this.stop_voice_visible = false
+      this.stopTimer()
     },
 
     send_voice() {
@@ -152,11 +166,27 @@ export default {
     stop_voice(){
       this.stop_voice_visible = false
       this.mediaRecorder.stop();
+      this.isRunning = false
+      this.player_visible = true
+      this.stopTimer()
     },
 
     delete_voice() {
       this.close_voice()
       if(this.mediaRecorder) this.mediaRecorder.stop();
+    },
+
+    startTimer() {
+      this.isRunning = true;
+      this.timer = setInterval(() => {
+        this.time += 0.1;
+      }, 100);
+    },
+
+    stopTimer() {
+      this.isRunning = false;
+      clearInterval(this.timer);
+      this.time = 0
     },
   }
 }
@@ -164,26 +194,25 @@ export default {
 
 <style scoped>
 
-#chat {
-  position: relative;
-  background: none;
-  min-width: 50%;
-  height: 93vh;
-}
-#messages {
-  height: 80%;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column-reverse;
-}
+  #chat {
+    position: relative;
+    background: none;
+    min-width: 50%;
+    height: 93vh;
+  }
+  #messages {
+    height: 80%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column-reverse;
+  }
 
-#restart-button{
-  position: fixed;
-  margin: 10px;
-  top: 0;
-  right: 0;
-  background-color: transparent;
-
+  #restart-button{
+    position: fixed;
+    margin: 10px;
+    top: 0;
+    right: 0;
+    background-color: transparent;
 }
 
 </style>
