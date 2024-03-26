@@ -26,10 +26,12 @@ services:
 
   ollama:
     image: ollama/ollama
+    container_name: ollama
     ports:
       - 11434:11434
     volumes:
       - ./ollama_data:/root/.ollama
+    command: serve && run mistral
     healthcheck:
       test: ollama list || exit 1
       interval: 10s
