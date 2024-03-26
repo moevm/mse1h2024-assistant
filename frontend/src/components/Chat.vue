@@ -30,6 +30,7 @@
 
 <script>
 import {post_text_request} from "@/requests"
+import {post_voice_request} from "@/requests"
 import {tr} from "vuetify/locale";
 import {instance} from "@/main";
 
@@ -44,6 +45,7 @@ export default {
       player_visible: false,
       stop_voice_visible: false,
       audioSrc: null,
+      audioBlob: null,
       mediaRecorder: null,
       chunks: [],
       isRunning: false,
@@ -110,6 +112,7 @@ export default {
             };
             this.mediaRecorder.onstop = () => {
                 const blob = new Blob(this.chunks, {type: 'audio/mpeg'});
+                this.audioBlob = blob
                 this.audioSrc = URL.createObjectURL(blob);
                 this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
                 this.mediaRecorder = null;
@@ -146,16 +149,15 @@ export default {
     send_voice() {
       this.create_message("Голосовое отправлено", true)
       this.close_voice()
-      post_text_request(Number(this.$store.getters.getState.course),
-          this.$store.getters.getState.subject,
-          "Голосовое отправлено")
-          .then(res => this.create_message(res, false))
 
       if(this.mediaRecorder) this.mediaRecorder.stop();
 
+      let formData = new FormData();
+      formData.append("audio", this.audioBlob)
       // TODO после написания серверной части перенести в requests.js, передается формат BLOB
-      const formData = new FormData();
-      post_voice_request(Number(this.$store.getters.getState.course), this.$store.getters.getState.subject, formData)
+      post_voice_request(Number(this.$store.getters.getState.course),
+          this.$store.getters.getState.subject,
+          formData)
           .then(res => this.create_message(res, false))
     },
 

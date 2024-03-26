@@ -1,6 +1,9 @@
 FROM python:3.9
 #RUN sudo chmod -R 777 /var/lib sudo apt-get install python3.9-venv
 
+RUN apt-get update &&\
+    apt-get install -y ffmpeg
+
 WORKDIR /backend
 
 COPY ./requirements.txt /backend/requirements.txt

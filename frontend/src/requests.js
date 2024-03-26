@@ -12,17 +12,16 @@ export async function post_text_request(course, subject, text){
 }
 
 export async function post_voice_request(course, subject, formData){
-    let response = await instance.post('your_server_url',
-        {
-            data: formData,
-            subject: subject,
-            text: text
-        },
+    formData.append("course", course)
+    formData.append("subject", subject)
+    let response = await instance.post('/api/send_voice_request',
+        formData,
         {
             headers: {
                 'Content-Type': 'multipart/form-data'
+            }
         }
-    })
+        )
 
     return response.data.is_ok
 }
