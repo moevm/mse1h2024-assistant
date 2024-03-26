@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Form, File, UploadFile
 import requests
 from backend.decoder.whisper import model, trunscribe
-from backend.models.request import TextRequest, AudioRequest
+from backend.models.request import TextRequest
 
 router = APIRouter(
     prefix='/api',
