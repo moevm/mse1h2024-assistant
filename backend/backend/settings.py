@@ -10,13 +10,21 @@ class Config(BaseModel):
     port: int
 
 
-config_parser: ConfigParser = ConfigParser()
-config_parser.read('backend/config.ini')
+class ConfigWrapper:
+    """Конфиг."""
+    def __init__(self, path: str):
+        """Конструктор."""
+        self._config_wrapper: ConfigParser = ConfigParser()
+        self._config_wrapper.read(path)
+        self._config: Config = Config(
+            host=self._config_wrapper.get('server', 'host'),
+            port=self._config_wrapper.get('server', 'port'),
+        )
 
-config: Config = Config(
-    host=config_parser.get('server', 'host'),
-    port=config_parser.get('server', 'port'),
-)
+    @property
+    def config(self) -> Config:
+        return self._config
 
 
-
+def config_func(path: str) -> Config:
+    return ConfigWrapper(path).config
