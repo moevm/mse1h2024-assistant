@@ -30,4 +30,4 @@ class ConfigWrapper:
         return self._config
 
 
-config: Config = ConfigWrapper(os.path.join(os.getcwd(), 'config.ini')).config
+config: Config = ConfigWrapper(os.path.join(os.path.dirname(__file__), 'config.ini')).config
