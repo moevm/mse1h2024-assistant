@@ -28,9 +28,9 @@ def handle_text_request(parameters: TextRequest):
     }
 
 
-@router.get("/ask_model_by_text_request")
-def ask_model_by_text(course : str, subject : str, text : str):
-    modelClient.readContextFromFile(os.path.join(dirname, '../../parser/new_data.json'), course, subject)
-    answer = modelClient.sendPrompt(text)
+@router.post("/ask_model_by_text_request")
+def ask_model_by_text(request: TextRequest):
+    modelClient.readContextFromFile(os.path.join(dirname, '../../parser/new_data.json'), request.course, request.subject)
+    answer = modelClient.sendPrompt(request.text)
     return answer
 
