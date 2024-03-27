@@ -1,5 +1,5 @@
 """Настройки."""
-
+import os
 from configparser import ConfigParser
 from pydantic import BaseModel
 
@@ -8,6 +8,8 @@ class Config(BaseModel):
     """Конфиг сервера."""
     host: str
     port: int
+    ollama_url: str
+    current_model: str
 
 
 class ConfigWrapper:
@@ -19,6 +21,8 @@ class ConfigWrapper:
         self._config: Config = Config(
             host=self._config_wrapper.get('server', 'host'),
             port=self._config_wrapper.get('server', 'port'),
+            ollama_url=self._config_wrapper.get('model', 'url'),
+            current_model=self._config_wrapper.get('model', 'name'),
         )
 
     @property
@@ -26,5 +30,4 @@ class ConfigWrapper:
         return self._config
 
 
-def config_func(path: str) -> Config:
-    return ConfigWrapper(path).config
+config: Config = ConfigWrapper(os.path.join(os.getcwd(), 'config.ini')).config

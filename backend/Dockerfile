@@ -11,4 +11,4 @@ RUN pip install --no-cache-dir --upgrade -r /backend/requirements.txt
 COPY backend /backend/backend
 COPY /backend/config.ini /backend/config.ini
 
-CMD ["python", "-m", "backend", "--config", "/backend/config.ini"]
+CMD ["python", "-m", "backend"]

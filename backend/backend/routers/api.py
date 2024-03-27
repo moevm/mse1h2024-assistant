@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from backend.models.request import TextRequest
 from backend.models.client import OllamaClient
+from backend.settings import config
 import os
 
 router = APIRouter(
@@ -8,8 +9,9 @@ router = APIRouter(
     tags=['api'],
 )
 
-modelClient = OllamaClient("mistral")
+modelClient = OllamaClient(config.ollama_url, config.current_model)
 dirname = os.path.dirname(__file__)
+
 
 @router.get("/")
 def root():

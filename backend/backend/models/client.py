@@ -61,7 +61,3 @@ class OllamaClient(Client):
         self.clearContext()
 
         return response['message']['content']
-
-
-client = OllamaClient('http://127.0.0.1:11434', 'mistral')
-print(client.sendPrompt('Когда сессия?'))
