@@ -1,12 +1,12 @@
 import {instance} from "@/main";
 
 export async function post_request(course, subject, text){
-    console.log({course: course,
+    console.log("SEND: " + {course: course,
         subject: subject,
         text: text})
-    let response = await instance.post("/api/send_text_request", {course: course,
+    let response = await instance.post("/api/ask_model_by_text_request", {course: course,
       subject: subject,
       text: text})
-
-    return response.data.is_ok
+      console.log("RESPONSE: " + response.data.text);
+    return response.data.text;
 }

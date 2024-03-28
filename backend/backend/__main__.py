@@ -1,13 +1,9 @@
 import argparse
 import uvicorn
-from backend.settings import config_func, Config
+from backend.settings import config
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--config')
-    args = parser.parse_args()
-    config: Config = config_func(args.config)
     uvicorn.run(
         app='backend.main:app',
         host=config.host,

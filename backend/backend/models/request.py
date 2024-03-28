@@ -2,6 +2,6 @@ from pydantic import BaseModel
 
 
 class TextRequest(BaseModel):
-    course: int
+    course: str
     subject: str
     text: str
