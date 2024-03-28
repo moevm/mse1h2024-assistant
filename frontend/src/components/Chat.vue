@@ -86,7 +86,7 @@ export default {
     send_message() {
       if (this.newMessage.trim() !== '') {
         this.create_message(this.newMessage, true)
-        post_request(Number(this.$store.getters.getState.course),
+        post_request(this.$store.getters.getState.course,
             this.$store.getters.getState.subject, this.newMessage)
             .then(res => this.create_message(res, false))
         this.newMessage = '';

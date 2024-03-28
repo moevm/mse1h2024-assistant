@@ -7,7 +7,6 @@ export async function post_request(course, subject, text){
     let response = await instance.post("/api/ask_model_by_text_request", {course: course,
       subject: subject,
       text: text})
-
-    console.log(response.data.text)
-    return response.data.text
+      console.log(response);
+    return response.data.text;
 }

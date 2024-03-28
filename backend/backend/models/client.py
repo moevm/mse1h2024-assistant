@@ -11,6 +11,7 @@ class OllamaClient(Client):
 
     # Метод, который ищет в json файле раздел с определённым названием и топиком, добавляет его в контекст
     def readContextFromFile(self, file, titleOfChapter, titleOfTopic):
+        print("PARAMS: ", titleOfChapter, " ", titleOfTopic)
         try:
             with open(file, 'r') as f:
                 jsonContext = json.loads(f.read())

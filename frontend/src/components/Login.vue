@@ -36,7 +36,7 @@ export default {
   },
   methods: {
     start(){
-      this.$store.commit('setCourse', this.course);
+      this.$store.commit('setCourse', `${this.course} курс`);
       this.$store.commit('setSubject', this.subject);
       console.log(this.$store.getters.getState)
       this.$router.push('/chat');

@@ -18,19 +18,11 @@ def root():
     return {"message": "Hello World"}
 
 
-@router.post("/send_text_request")
-def handle_text_request(parameters: TextRequest):
-    return {
-        "course": parameters.course,
-        "subject": parameters.subject,
-        "text": parameters.text,
-        "is_ok": "ok"
-    }
-
-
 @router.post("/ask_model_by_text_request")
 def ask_model_by_text(request: TextRequest):
     modelClient.readContextFromFile(os.path.join(dirname, '../../parser/new_data.json'), request.course, request.subject)
     answer = modelClient.sendPrompt(request.text)
-    return answer
+    print("TYPE: ", isinstance(answer, str))
+    print("ANSWER: ", answer)
+    return {'text': answer}
 
