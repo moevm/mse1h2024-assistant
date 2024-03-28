@@ -22,7 +22,5 @@ def root():
 def ask_model_by_text(request: TextRequest):
     modelClient.readContextFromFile(os.path.join(dirname, '../../parser/new_data.json'), request.course, request.subject)
     answer = modelClient.sendPrompt(request.text)
-    print("TYPE: ", isinstance(answer, str))
-    print("ANSWER: ", answer)
     return {'text': answer}
 

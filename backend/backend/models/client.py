@@ -6,12 +6,11 @@ class OllamaClient(Client):
     def __init__(self, host: str, model: str):
         self.host: str = host
         self.model: str = model
-        self.context = "Ты русскоязычный бот и отвечаешь только на русском языке. Для ответа используй следующую информацию: "
+        self.context = "Отвечай только на русском. Для ответа используй следующую информацию: "
         super().__init__(host=self.host)
 
     # Метод, который ищет в json файле раздел с определённым названием и топиком, добавляет его в контекст
     def readContextFromFile(self, file, titleOfChapter, titleOfTopic):
-        print("PARAMS: ", titleOfChapter, " ", titleOfTopic)
         try:
             with open(file, 'r') as f:
                 jsonContext = json.loads(f.read())
@@ -40,7 +39,7 @@ class OllamaClient(Client):
         # Метод, который обнуляет контекст
 
     def clearContext(self):
-        self.context = "Ты русскоязычный бот и отвечаешь только на русском языке. Для ответа используй следующую информацию: "
+        self.context = "Отвечай только на русском. Для ответа используй следующую информацию: "
 
         # Метод, который создаёт промпт, указывая в нём сообщение и роль: system или user
 

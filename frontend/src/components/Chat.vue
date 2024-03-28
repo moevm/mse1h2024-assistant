@@ -207,12 +207,12 @@ export default {
     flex-direction: column-reverse;
   }
 
-  #restart-button{
+  #restart-button {
     position: fixed;
     margin: 10px;
     top: 0;
     right: 0;
     background-color: transparent;
-}
+  }
 
 </style>
