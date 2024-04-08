@@ -1,12 +1,12 @@
 import io
 import json
 import sys
-
+import aiohttp
+import asyncio
 import telebot
 import requests
 from modules.logger import build_logger
 import configparser
-
 
 def read_config():
     config = configparser.ConfigParser()
@@ -17,11 +17,7 @@ def read_config():
 
     return bot_token, backend_url
 
-
-def main():
-    bot_token, backend_url = read_config()
-    bot = telebot.TeleBot(bot_token)
-
+async def main(bot):
     user_data = {}
 
     logger = build_logger('my_logger')
@@ -50,7 +46,7 @@ def main():
             course = user_data[message.from_user.id]['course']
             subject = user_data[message.from_user.id]['subject']
             question = message.text
-            send_text_to_backend(course, subject, question)
+            asyncio.run_coroutine_threadsafe(send_text_to_backend(course, subject, question), loop)
             bot.reply_to(message, "Твое сообщение обрабатывается.")
             user_data[message.from_user.id] = {'state': 'course'}
 
@@ -69,21 +65,29 @@ def main():
 
             course = user_data[message.from_user.id]['course']
             subject = user_data[message.from_user.id]['subject']
-            send_text_to_backend(course, subject, voice_string)
+            asyncio.run_coroutine_threadsafe(send_text_to_backend(course, subject, voice_string), loop)
 
             user_data[message.from_user.id] = {'state': 'course'}
 
-    def send_text_to_backend(course, subject, question):
-        payload = {'course': int(course), 'subject': subject, 'text': question}
-        json_payload = json.dumps(payload)
+    async def send_text_to_backend(course, subject, question):
+        payload = json.dumps({'course': int(course), 'subject': subject, 'text': question})
         try:
-            response = requests.post(backend_url, data=json_payload)
-            if response.ok:
-                logger.info("Text data sent to backend successfully.")
-            else:
-                logger.error("Error sending text data to backend: %s", response.status_code)
+            async with aiohttp.ClientSession() as session:
+                async with session.post(backend_url, json=payload) as response:
+                    response_data = await response.json()
+                    response_text = response_data.get("text")
+                    if response_text:
+                        print("RESPONSE:", response_text)
+                        return response_text
+                    else:
+                        print("No 'text' field in response:", response_data)
+                        return None
+        except aiohttp.ClientError as err:
+            logger(f"Error sending text data to backend: {err}")
+            return None
         except Exception as e:
-            logger.error("An error occurred while sending text data to backend: %s", str(e))
+            logger(f"An error occurred while sending text data to backend: {e}")
+            return None
 
     @bot.message_handler(content_types=['voice'])
     def process_voice_message(message):
@@ -93,13 +97,16 @@ def main():
     def process_text_message(message):
         handle_text_message(message)
 
+if __name__ == '__main__':
+    bot_token, backend_url = read_config()
+    bot = telebot.TeleBot(bot_token)
+    logger = build_logger('my_logger')
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main(bot))
+
     try:
-        bot.polling()
+        bot.infinity_polling(skip_pending=True)
     except Exception as e:
         logger.error("An error occurred while running the bot: %s", str(e))
         bot.send_message("Произошла ошибка сервера")
         sys.exit(1)
-
-
-if __name__ == '__main__':
-    main()
