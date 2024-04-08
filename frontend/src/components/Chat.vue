@@ -13,7 +13,7 @@
 
 
       <v-card-actions class="d-flex justify-center" style="padding: 0; margin-right: 8px; height: 72px;">
-        <v-text-field v-show="text_visible" v-model="newMessage" label="Сообщение" style="margin: 8px" hide-details></v-text-field>
+        <v-text-field v-show="text_visible" v-model="newMessage" @keyup.enter="send_message" label="Сообщение" style="margin: 8px" hide-details></v-text-field>
         <v-btn class="button" v-show="send_text_visible" @click="send_message" color="primary" icon="mdi-send-variant-outline"></v-btn>
         <v-btn class="button" v-show="open_voice_visible" @click="start_voice" color="primary" style="margin: 0" icon="mdi-microphone-outline"></v-btn>
         <div v-show="isRunning" style="margin-right: 5px">Запись: {{ formatTime }}</div>
