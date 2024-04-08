@@ -64,6 +64,13 @@ export default {
     }
   },
 
+  mounted() {
+    document.addEventListener('keydown', this.handleEnterKey);
+  },
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.handleEnterKey);
+  },
+
   methods: {
     create_message(content, is_me) {
       this.messages.unshift({
@@ -161,6 +168,13 @@ export default {
       //     'Content-Type': 'multipart/form-data'
       //   }
       // })
+    },
+
+    handleEnterKey(event) {
+      console.log("done")
+      if (this.send_voice_visible && event.key === 'Enter') {
+          this.send_voice();
+      }
     },
 
     stop_voice(){
