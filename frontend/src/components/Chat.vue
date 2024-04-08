@@ -65,10 +65,10 @@ export default {
   },
 
   mounted() {
-    document.addEventListener('keydown', this.handleEnterKey);
+    document.addEventListener('keydown', this.handleKeyPress);
   },
   beforeDestroy() {
-    document.removeEventListener('keydown', this.handleEnterKey);
+    document.removeEventListener('keydown', this.handleKeyPress);
   },
 
   methods: {
@@ -170,10 +170,12 @@ export default {
       // })
     },
 
-    handleEnterKey(event) {
-      console.log("done")
+    handleKeyPress(event) {
       if (this.send_voice_visible && event.key === 'Enter') {
           this.send_voice();
+      }
+      else if (this.delete_voice_visible && event.key === 'Escape') {
+        this.delete_voice();
       }
     },
 
