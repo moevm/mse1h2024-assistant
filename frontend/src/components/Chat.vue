@@ -16,7 +16,7 @@
         <v-text-field v-show="text_visible" v-model="newMessage" @keyup.enter="send_message" label="Сообщение" style="margin: 8px" hide-details></v-text-field>
         <v-btn class="button" v-show="send_text_visible" @click="send_message" color="primary" icon="mdi-send-variant-outline"></v-btn>
         <v-btn class="button" v-show="open_voice_visible" @click="start_voice" color="primary" style="margin: 0" icon="mdi-microphone-outline"></v-btn>
-        <div v-show="isRunning" style="margin-right: 5px">Запись: {{ formatTime }}</div>
+        <p v-show="isRunning">Запись:</p><div id="indicator" v-show="isRunning">{{ formatTime }}</div>
         <audio v-show="player_visible" controls ref="audioPlayer" :src="audioSrc" type="audio/mpeg"></audio>
         <v-btn class="button" v-show="stop_voice_visible" @click="stop_voice" color="primary" style="margin: 0" icon="mdi-pause"></v-btn>
         <v-btn class="button" v-show="send_voice_visible" @click="send_voice" color="primary" icon="mdi-send-variant-outline"></v-btn>
@@ -209,6 +209,10 @@ export default {
 </script>
 
 <style scoped>
+  #indicator{
+    margin: 10px;
+    animation:blinkingOpacity 1s infinite alternate;
+  }
 
   #chat {
     position: relative;
@@ -229,6 +233,15 @@ export default {
     top: 0;
     right: 0;
     background-color: transparent;
+  }
+
+  @keyframes blinkingOpacity {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0.4;
+    }
   }
 
 </style>
