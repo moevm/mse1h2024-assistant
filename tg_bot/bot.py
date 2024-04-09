@@ -1,13 +1,10 @@
 import json
 import sys
-import logging
-
 import telebot
 import requests
 import configparser
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from modules.logger import build_logger
 
 
 def read_config():
@@ -20,7 +17,7 @@ def read_config():
     return bot_token, backend_url
 
 
-def send_text_to_backend(backend_url, course, subject, question):
+def send_text_to_backend(backend_url, course, subject, question, logger):
     payload = {'course': course, 'subject': subject, 'text': question}
     logger.info("Sending payload to backend: %s", json.dumps(payload))
     try:
@@ -37,7 +34,7 @@ def send_text_to_backend(backend_url, course, subject, question):
         logger.error("An error occurred while sending text data to backend: %s", str(e))
 
 
-def handle_text_message(message, user_data, bot, backend_url):
+def handle_text_message(message, user_data, bot, backend_url, logger):
     user_state = user_data.get(message.from_user.id, {}).get('state')
 
     if user_state == 'course':
@@ -56,7 +53,7 @@ def handle_text_message(message, user_data, bot, backend_url):
         subject = user_data[message.from_user.id]['subject']
         question = message.text
         bot.reply_to(message, "Твое сообщение обрабатывается.")
-        response_text = send_text_to_backend(backend_url, course, subject, question)
+        response_text = send_text_to_backend(backend_url, course, subject, question, logger)
         if response_text:
             bot.send_message(message.chat.id, response_text)
         else:
@@ -64,7 +61,7 @@ def handle_text_message(message, user_data, bot, backend_url):
         user_data[message.from_user.id] = {'state': 'course'}
 
 
-def handle_voice_message(message, user_data, bot, backend_url):
+def handle_voice_message(message, user_data, bot, backend_url, logger):
     if 'course' not in user_data[message.from_user.id] or 'subject' not in user_data[message.from_user.id]:
         bot.reply_to(message, "Для начала введите курс и предмет, используя команду \start")
     else:
@@ -76,7 +73,7 @@ def handle_voice_message(message, user_data, bot, backend_url):
 
         course = user_data[message.from_user.id]['course']
         subject = user_data[message.from_user.id]['subject']
-        response_text = send_text_to_backend(backend_url, course, subject, voice_string)
+        response_text = send_text_to_backend(backend_url, course, subject, voice_string, logger)
 
         if response_text:
             bot.send_message(message.chat.id, response_text)
@@ -89,7 +86,7 @@ def handle_voice_message(message, user_data, bot, backend_url):
 def main():
     bot_token, backend_url = read_config()
     bot = telebot.TeleBot(bot_token)
-
+    logger = build_logger('my_logger')
     user_data = {}
 
     @bot.message_handler(commands=['start'])
@@ -100,11 +97,11 @@ def main():
 
     @bot.message_handler(content_types=['voice'])
     def process_voice_message(message):
-        handle_voice_message(message, user_data, bot, backend_url)
+        handle_voice_message(message, user_data, bot, backend_url, logger)
 
     @bot.message_handler(func=lambda message: True)
     def process_text_message(message):
-        handle_text_message(message, user_data, bot, backend_url)
+        handle_text_message(message, user_data, bot, backend_url, logger)
 
     try:
         bot.polling()
