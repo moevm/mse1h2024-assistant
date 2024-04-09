@@ -1,9 +1,13 @@
 import json
 import sys
+import logging
 
 import telebot
 import requests
 import configparser
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def read_config():
@@ -18,20 +22,20 @@ def read_config():
 
 def send_text_to_backend(backend_url, course, subject, question):
     payload = {'course': course, 'subject': subject, 'text': question}
-    print(json.dumps(payload))
+    logger.info("Sending payload to backend: %s", json.dumps(payload))
     try:
-        response = requests.post(backend_url, json.dumps(payload))
+        response = requests.post(backend_url, json=payload)
         response_data = response.json()
-        print(response_data)
+        logger.info("Received response from backend: %s", response_data)
         response_text = response_data.get("text")
         if response_text:
-            print("RESPONSE:", response_text)
+            logger.info("Received response text: %s", response_text)
             return response_text
         else:
-            print("No 'text' field in response:", response_data)
+            logger.warning("No 'text' field in response: %s", response_data)
             return None
     except Exception as e:
-        print("An error occurred while sending text data to backend:", str(e))
+        logger.error("An error occurred while sending text data to backend: %s", str(e))
 
 
 def handle_text_message(message, user_data, bot, backend_url):
@@ -97,7 +101,7 @@ def main():
     try:
         bot.polling()
     except Exception as e:
-        print("An error occurred while running the bot:", str(e))
+        logger.error("An error occurred while running the bot: %s", str(e))
         sys.exit(1)
 
 
