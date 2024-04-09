@@ -24,9 +24,8 @@ def send_text_to_backend(backend_url, course, subject, question):
     payload = {'course': course, 'subject': subject, 'text': question}
     logger.info("Sending payload to backend: %s", json.dumps(payload))
     try:
-        response = requests.post(backend_url, json=payload)
+        response = requests.post(backend_url, json.dumps(payload))
         response_data = response.json()
-        logger.info("Received response from backend: %s", response_data)
         response_text = response_data.get("text")
         if response_text:
             logger.info("Received response text: %s", response_text)
@@ -56,8 +55,12 @@ def handle_text_message(message, user_data, bot, backend_url):
         course = user_data[message.from_user.id]['course']
         subject = user_data[message.from_user.id]['subject']
         question = message.text
-        send_text_to_backend(backend_url, course, subject, question)
         bot.reply_to(message, "Твое сообщение обрабатывается.")
+        response_text = send_text_to_backend(backend_url, course, subject, question)
+        if response_text:
+            bot.send_message(message.chat.id, response_text)
+        else:
+            bot.send_message(message.chat.id, "При получении ответа произошла ошибка.")
         user_data[message.from_user.id] = {'state': 'course'}
 
 
@@ -73,7 +76,12 @@ def handle_voice_message(message, user_data, bot, backend_url):
 
         course = user_data[message.from_user.id]['course']
         subject = user_data[message.from_user.id]['subject']
-        send_text_to_backend(backend_url, course, subject, voice_string)
+        response_text = send_text_to_backend(backend_url, course, subject, voice_string)
+
+        if response_text:
+            bot.send_message(message.chat.id, response_text)
+        else:
+            bot.send_message(message.chat.id, "При получении ответа произошла ошибка.")
 
         user_data[message.from_user.id] = {'state': 'course'}
 
