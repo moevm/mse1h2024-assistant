@@ -18,12 +18,12 @@ def read_config():
 
 def send_text_to_backend(backend_url, course, subject, question):
     payload = {'course': course, 'subject': subject, 'text': question}
-    print(payload)
+    print(json.dumps(payload))
     try:
-        response = requests.post(backend_url, json=payload)
+        response = requests.post(backend_url, json.dumps(payload))
         response_data = response.json()
         print(response_data)
-        response_text = response_data["text"]
+        response_text = response_data.get("text")
         if response_text:
             print("RESPONSE:", response_text)
             return response_text
