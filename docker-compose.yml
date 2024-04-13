@@ -1,10 +1,4 @@
 version: '3.1'
-networks:
-  main:
-    driver: bridge
-    ipam:
-     config:
-       - subnet: 192.168.0.0/16
 services:
   frontend:
     build: 
@@ -13,9 +7,6 @@ services:
     container_name: frontend
     ports: 
       - "8080:80"
-    networks:
-      main:
-          ipv4_address: 192.168.64.1
   
   nginx:
     image: nginx:alpine
@@ -24,10 +15,6 @@ services:
       - "80:80"
     depends_on:
       - frontend
-    networks:
-      main:
-          ipv4_address: 192.168.64.2
-
   backend:
     build:
       context: ./backend
@@ -35,10 +22,6 @@ services:
     container_name: backend
     ports: 
       - "5000:5000"
-    networks:
-      main:
-          ipv4_address: 192.168.64.3
-
   ollama:
     image: ollama/ollama
     container_name: ollama
@@ -46,16 +29,12 @@ services:
       - 11434:11434
     volumes:
       - ./ollama_data:/root/.ollama
-    command: serve && run mistral
     healthcheck:
       test: ollama list || exit 1
       interval: 10s
       timeout: 30s
       retries: 5
       start_period: 10s
-    networks:
-      main:
-          ipv4_address: 192.168.64.4
     # deploy:
     #   resources:
     #     reservations:
