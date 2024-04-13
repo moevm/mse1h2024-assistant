@@ -1,4 +1,10 @@
 version: '3.1'
+networks:
+  main:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 192.168.0.0/16
 services:
   frontend:
     build: 
@@ -7,6 +13,9 @@ services:
     container_name: frontend
     ports: 
       - "8080:80"
+    networks:
+      main:
+          ipv4_address: 192.168.64.1
   
   nginx:
     image: nginx:alpine
@@ -15,14 +24,20 @@ services:
       - "80:80"
     depends_on:
       - frontend
+    networks:
+      main:
+          ipv4_address: 192.168.64.2
 
-  # backend:
-  #   build:
-  #     context: ./backend
-  #     dockerfile: Dockerfile
-  #   container_name: backend
-  #   ports: 
-  #     - "5000:5000"
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    ports: 
+      - "5000:5000"
+    networks:
+      main:
+          ipv4_address: 192.168.64.3
 
   ollama:
     image: ollama/ollama
@@ -38,10 +53,13 @@ services:
       timeout: 30s
       retries: 5
       start_period: 10s
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [ gpu ]
+    networks:
+      main:
+          ipv4_address: 192.168.64.4
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [ gpu ]
