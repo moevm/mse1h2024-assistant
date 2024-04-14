@@ -9,6 +9,6 @@ COPY ./requirements.txt /backend/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /backend/requirements.txt
 
 COPY backend /backend/backend
-COPY /backend/config.ini /backend/config.ini
+COPY parser /backend/parser
 
 CMD ["python", "-m", "backend"]
