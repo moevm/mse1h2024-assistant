@@ -4,19 +4,20 @@ import json
 
 def send_text_to_backend(backend_url, course, subject, question, logger):
     payload = {'course': course, 'subject': subject, 'text': question}
-    logger.info("Sending payload to backend: %s", json.dumps(payload))
+    encoded_payload = json.dumps(payload, ensure_ascii=False).encode('utf-8')
+    logger.info("Отправка данных на бэкэнд: %s", encoded_payload.decode('utf-8'))
     try:
-        response = requests.post(backend_url, json.dumps(payload))
+        response = requests.post(backend_url, encoded_payload)
         response_data = response.json()
         response_text = response_data.get("text")
         if response_text:
-            logger.info("Received response text: %s", response_text)
+            logger.info("Получен ответ от сервера: %s", response_text)
             return response_text
         else:
-            logger.warning("No 'text' field in response: %s", response_data)
+            logger.warning("В ответе отсутствует поле 'text': %s", response_data)
             return None
     except Exception as e:
-        logger.error("An error occurred while sending text data to backend: %s", str(e))
+        logger.error("Произошла ошибка при отправке данных на бэкэнд: %s", str(e))
 
 
 def handle_text_message(message, user_data, bot, backend_url, logger):
@@ -43,7 +44,8 @@ def handle_text_message(message, user_data, bot, backend_url, logger):
             bot.send_message(message.chat.id, response_text)
         else:
             bot.send_message(message.chat.id, "При получении ответа произошла ошибка.")
-        user_data[message.from_user.id] = {'state': 'course'}
+        bot.send_message(message.chat.id, "Введите ваш курс.")
+        user_data[message.from_user.id]['state'] = 'course'
 
 
 def handle_voice_message(message, user_data, bot, backend_url, logger):
@@ -65,4 +67,5 @@ def handle_voice_message(message, user_data, bot, backend_url, logger):
         else:
             bot.send_message(message.chat.id, "При получении ответа произошла ошибка.")
 
-        user_data[message.from_user.id] = {'state': 'course'}
+        bot.send_message(message.chat.id, "Введите ваш курс.")
+        user_data[message.from_user.id]['state'] = 'course'
