@@ -1,6 +1,6 @@
 import {instance} from "@/main";
 
-export async function post_request(course, subject, text){
+export async function post_text_request(course, subject, text){
     console.log("SEND: " + {course: course,
         subject: subject,
         text: text})
