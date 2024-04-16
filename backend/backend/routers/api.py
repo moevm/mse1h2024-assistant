@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Form, File, UploadFile
+from fastapi.requests import Request
+from typing import Dict
 from backend.models.request import TextRequest
 from backend.models.client import OllamaClient
 from backend.settings import config
@@ -26,13 +28,14 @@ def ask_model_by_text(request: TextRequest):
     return {'text': answer}
 
 @router.post("/send_voice_request")
-def handle_voice_request(course: int = Form(...), subject: str = Form(...), audio: UploadFile = File(...)):
-
+async def handle_voice_request(request: Request):
     url = "http://localhost:9000/asr"
+    form = await request.form()
+    form_dict: Dict = form.__dict__['_dict']
 
     payload = {
         "input": {
-            "audio": audio,
+            "audio": form_dict['audio'],
             "audio_base64": "None",
             "transcription": "plain_text",
             "translate": False,
@@ -44,6 +47,7 @@ def handle_voice_request(course: int = Form(...), subject: str = Form(...), audi
     headers = {
         "content-type": 'multipart/form-data'
     }
+    print(form_dict)
 
     transcription = requests.post(url, json=payload, headers=headers)
 

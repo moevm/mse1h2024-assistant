@@ -31,8 +31,6 @@
 <script>
 import {post_text_request} from "@/requests"
 import {post_voice_request} from "@/requests"
-import {tr} from "vuetify/locale";
-import {instance} from "@/main";
 
 export default {
   data() {
@@ -152,10 +150,10 @@ export default {
 
       if(this.mediaRecorder) this.mediaRecorder.stop();
 
-      let formData = new FormData();
+      const formData = new FormData();
       formData.append("audio", this.audioBlob)
 
-      post_voice_request(Number(this.$store.getters.getState.course),
+      post_voice_request(this.$store.getters.getState.course,
           this.$store.getters.getState.subject,
           formData)
           .then(res => this.create_message(res, false))
