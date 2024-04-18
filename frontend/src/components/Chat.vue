@@ -38,7 +38,7 @@ export default {
     return {
       text_visible: true,
       send_text_visible: true,
-      open_voice_visible: true,
+      open_voice_visible: false,
       send_voice_visible: false,
       delete_voice_visible: false,
       player_visible: false,
@@ -54,6 +54,17 @@ export default {
       ],
       newMessage: ''
     }
+  },
+
+  created() {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(() => {
+          this.open_voice_visible = true;
+        })
+        .catch(error => {
+          console.error('Ошибка доступа к микрофону:', error);
+          alert('Не удалось получить доступ к микрофону');
+        });
   },
 
   computed: {
