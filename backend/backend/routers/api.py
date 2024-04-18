@@ -29,27 +29,26 @@ def ask_model_by_text(request: TextRequest):
 
 @router.post("/send_voice_request")
 async def handle_voice_request(request: Request):
-    url = "http://localhost:9000/asr"
+    url = "http://172.19.0.4:9000/asr"
     form = await request.form()
     form_dict: Dict = form.__dict__['_dict']
 
     payload = {
         "input": {
-            "audio": form_dict['audio'],
-            "audio_base64": "None",
-            "transcription": "plain_text",
-            "translate": False,
+            "encode": True,
+            "task": "transcribe",
             "language": "ru",
-            "word_timestamps": False
+            "vad_filter": True,
+            "word_timestamps": False,
+            "output": "txt"
         },
-        "enable_vad": True
     }
     headers = {
         "content-type": 'multipart/form-data'
     }
     print(form_dict)
 
-    transcription = requests.post(url, json=payload, headers=headers)
+    transcription = requests.post(url, json=payload, headers=headers, data=form_dict['audio'])
 
     print("Transcript: ", transcription.text)
     modelClient.readContextFromFile(os.path.join(dirname, '../../parser/new_data.json'), course, subject)
