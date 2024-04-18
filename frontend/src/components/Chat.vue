@@ -170,15 +170,6 @@ export default {
           .then(res => this.create_message(res, false))
 
       if(this.mediaRecorder) this.mediaRecorder.stop();
-
-      // TODO после написания серверной части перенести в requests.js, передается формат BLOB
-      // const formData = new FormData();
-      // formData.append('voice', new Blob(this.chunks, {type: 'audio/mpeg'}), 'recorded_audio.wav');
-      // instance.post('your_server_url', formData, {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data'
-      //   }
-      // })
     },
 
     handleKeyPress(event) {
