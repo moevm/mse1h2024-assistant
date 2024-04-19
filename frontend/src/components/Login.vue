@@ -52,6 +52,7 @@ export default {
 
   watch: {
     course(newCourse) {
+      this.subject = '';
       this.subjects = this.back_data[newCourse] || [];
     }
   },
