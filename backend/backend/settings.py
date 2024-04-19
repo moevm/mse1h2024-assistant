@@ -10,6 +10,8 @@ class Config(BaseModel):
     port: int
     ollama_url: str
     current_model: str
+    celery_broker_url: str
+    celery_backend_url: str
 
 
 class ConfigWrapper:
@@ -23,6 +25,8 @@ class ConfigWrapper:
             port=self._config_wrapper.get('server', 'port'),
             ollama_url=self._config_wrapper.get('model', 'url'),
             current_model=self._config_wrapper.get('model', 'name'),
+            celery_broker_url=self._config_wrapper.get('celery', 'broker_url'),
+            celery_backend_url=self._config_wrapper.get('celery', 'backend_url'),
         )
 
     @property

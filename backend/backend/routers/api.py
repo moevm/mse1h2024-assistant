@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Form, File, UploadFile
 from fastapi.requests import Request
 from typing import Dict
-from backend.models.request import TextRequest
+from backend.models.request import TextRequest, MultipleTasksRequest
 from backend.models.client import OllamaClient
 from backend.settings import config
+from backend.celery.worker import example_task
+from backend.celery.tasks import getTaskResult, getTasksStatus, deleteTasks
 import requests
 import os
 
@@ -55,3 +57,22 @@ async def handle_voice_request(request: Request):
     answer = modelClient.sendPrompt(transcription.text)
     return {'text': answer}
 
+
+
+@router.post("/celery_example/{text}")
+def celery_example(text):
+    task = example_task.apply_async([],{"text": text})
+    return {'task_id': task.id}
+
+@router.get("/tasks/{task_id}")
+def get_status(task_id):
+    return getTaskResult(task_id)
+
+@router.post("/tasks/status")
+def get_status(request: MultipleTasksRequest):
+    return getTasksStatus(request.task_id_list)
+
+@router.delete("/tasks/delete")
+def get_status(request: MultipleTasksRequest):
+    deleteTasks(request.task_id_list)
+    return {"ok": True}
