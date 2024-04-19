@@ -54,5 +54,5 @@ async def handle_voice_request(request: Request):
     print("Transcript: ", transcription.text)
     modelClient.readContextFromFile(os.path.join(dirname, '../../parser/new_data.json'), course, subject)
     answer = modelClient.sendPrompt(transcription.text)
-    return {'text': answer}
+    return {'text': translate(answer)}
 
