@@ -30,9 +30,8 @@
 </template>
 
 <script>
-import {post_request} from "@/requests"
-import {tr} from "vuetify/locale";
-import {instance} from "@/main";
+import {post_text_request} from "@/requests"
+import {post_voice_request} from "@/requests"
 
 export default {
   data() {
@@ -45,6 +44,7 @@ export default {
       player_visible: false,
       stop_voice_visible: false,
       audioSrc: null,
+      audioBlob: null,
       mediaRecorder: null,
       chunks: [],
       isRunning: false,
@@ -105,7 +105,7 @@ export default {
     send_message() {
       if (this.newMessage.trim() !== '') {
         this.create_message(this.newMessage, true)
-        post_request(this.$store.getters.getState.course,
+        post_text_request(this.$store.getters.getState.course,
             this.$store.getters.getState.subject, this.newMessage)
             .then(res => this.create_message(res, false))
         this.newMessage = '';
@@ -129,6 +129,7 @@ export default {
             };
             this.mediaRecorder.onstop = () => {
                 const blob = new Blob(this.chunks, {type: 'audio/mpeg'});
+                this.audioBlob = blob;
                 this.audioSrc = URL.createObjectURL(blob);
                 this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
                 this.mediaRecorder = null;
@@ -165,12 +166,16 @@ export default {
     send_voice() {
       this.create_message("Голосовое отправлено", true)
       this.close_voice()
-      post_request(Number(this.$store.getters.getState.course),
-          this.$store.getters.getState.subject,
-          "Голосовое отправлено")
-          .then(res => this.create_message(res, false))
 
       if(this.mediaRecorder) this.mediaRecorder.stop();
+      
+      const formData = new FormData();
+      formData.append("audio", this.audioBlob)
+
+      post_voice_request(this.$store.getters.getState.course,
+          this.$store.getters.getState.subject,
+          formData)
+          .then(res => this.create_message(res, false))
     },
 
     handleKeyPress(event) {
@@ -179,8 +184,7 @@ export default {
       }
       else if (this.delete_voice_visible && event.key === 'Escape') {
         this.delete_voice();
-      }
-    },
+    }
 
     stop_voice(){
       this.stop_voice_visible = false
