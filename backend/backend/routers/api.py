@@ -35,7 +35,7 @@ def send_courses():
             res[course] = []
             for item in data[i]:
                 res[course].append(item["name"])
-    return json.dumps(res, ensure_ascii=False)
+    return res
 
 
 @router.post("/ask_model_by_text_request")
