@@ -9,6 +9,7 @@ def main():
         host=config.host,
         port=config.port,
         workers=1,
+        reload=True,
     )
 
 

@@ -51,6 +51,23 @@ services:
               capabilities: [ gpu ]
     networks:
       - main
+  whisper:
+    image: onerahmet/openai-whisper-asr-webservice:latest-gpu
+    container_name: whisper
+    ports:
+      - 9000:9000
+    environment:
+      - ASR_MODEL=medium
+      - ASR_ENGINE=faster_whisper
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+    networks:
+      - main
 
 networks:
   main:
