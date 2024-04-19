@@ -3,10 +3,11 @@
     <v-card id="chat" style="box-shadow: none">
       <v-card-text id="messages" style="padding: 0">
         <v-list-item v-for="(message, index) in messages" :key="index">
-            <v-list-item-title :class="message.me ? 'text-right' : 'text-left'">
-              <v-chip :color="message.me ? 'primary' : ''">{{ message.content }}</v-chip>
-              <v-list-item-subtitle>{{ message.created_at }}</v-list-item-subtitle>
-            </v-list-item-title>
+          <v-list-item-title style="height: max-content;" :class="message.me ? 'text-right' : 'text-left'">
+            <v-chip :color="message.me ? 'primary' : ''" style="white-space: pre-wrap; display: inline-block; max-width: 40%; width: max-content;
+             text-align: left; word-break: break-word; height: max-content; border-radius: 10px"> {{ message.content }} </v-chip>
+            <v-list-item-subtitle>{{ message.created_at }}</v-list-item-subtitle>
+          </v-list-item-title>
         </v-list-item>
       </v-card-text>
 
@@ -219,7 +220,7 @@ export default {
   #chat {
     position: relative;
     background: none;
-    min-width: 50%;
+    width: 50%;
     height: 93vh;
   }
   #messages {
