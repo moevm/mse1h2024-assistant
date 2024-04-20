@@ -184,7 +184,8 @@ export default {
       }
       else if (this.delete_voice_visible && event.key === 'Escape') {
         this.delete_voice();
-    }
+      }
+    },
 
     stop_voice(){
       this.stop_voice_visible = false

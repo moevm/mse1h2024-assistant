@@ -7,6 +7,7 @@ from backend.settings import config
 from backend.translator.translator import translate
 import requests
 import os
+import json
 
 router = APIRouter(
     prefix='/api',
@@ -22,11 +23,29 @@ def root():
     return {"message": "Hello World"}
 
 
+@router.get("/get_courses")
+def send_courses():
+    with open("./parser/new_data.json", encoding="utf-8") as json_file:
+        data = json.load(json_file)
+    res = {}
+    for i in list(data.keys()):
+        if i != "date":
+            course = i
+            if course == "info":
+                course = "Информация"
+            res[course] = []
+            for item in data[i]:
+                res[course].append(item["name"])
+    return res
+
+
 @router.post("/ask_model_by_text_request")
 def ask_model_by_text(request: TextRequest):
-    modelClient.readContextFromFile(os.path.join(dirname, '../../parser/new_data.json'), request.course, request.subject)
+    modelClient.readContextFromFile(os.path.join(dirname, '../../parser/new_data.json'), request.course,
+                                    request.subject)
     answer = modelClient.sendPrompt(request.text)
     return {'text': translate(answer)}
+
 
 @router.post("/send_voice_request")
 async def handle_voice_request(request: Request):
@@ -54,5 +73,6 @@ async def handle_voice_request(request: Request):
     print("Transcript: ", transcription.text)
     modelClient.readContextFromFile(os.path.join(dirname, '../../parser/new_data.json'), course, subject)
     answer = modelClient.sendPrompt(transcription.text)
+
     return {'text': translate(answer)}
 

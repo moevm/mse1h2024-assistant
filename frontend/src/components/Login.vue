@@ -3,13 +3,13 @@
     <v-card class="login_card" >
       <v-select
         label="Выберите номер курса"
-        :items="['1', '2', '3', '4', '5', '6']"
+        :items="courses"
         variant="outlined"
         v-model="course"
       />
       <v-select
-        label="Выберите предмет"
-        :items="['Программирование', 'Информатика']"
+        label="Выберите раздел"
+        :items="subjects"
         variant="outlined"
         :disabled="this.course.length < 1"
         v-model="subject"
@@ -26,14 +26,37 @@
 </template>
 
 <script>
+import {get_courses} from "@/requests";
+import {instance} from "@/main";
+
 export default {
   name: 'Login',
   data:() => {
     return {
       course: '',
-      subject: ''
+      subject: '',
+      courses: [],
+      subjects: [],
+      back_data: {}
     }
   },
+
+  async mounted() {
+    try {
+      this.back_data = await get_courses();
+      this.courses = Object.keys(this.back_data)
+    } catch (error) {
+      console.error('Ошибка при загрузке курсов:', error);
+    }
+  },
+
+  watch: {
+    course(newCourse) {
+      this.subject = '';
+      this.subjects = this.back_data[newCourse] || [];
+    }
+  },
+
   methods: {
     start(){
       this.$store.commit('setCourse', `${this.course} курс`);
