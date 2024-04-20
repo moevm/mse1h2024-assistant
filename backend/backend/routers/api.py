@@ -20,7 +20,6 @@ dirname = os.path.dirname(__file__)
 def root():
     return {"message": "Hello World"}
 
-
 @router.post("/ask_model_by_text_request")
 def ask_model_by_text(request: TextRequest):
     modelClient.readContextFromFile(os.path.join(dirname, '../../parser/new_data.json'), request.course, request.subject)

@@ -1,12 +1,19 @@
 from ollama import Client
 import json
 
-
 class OllamaClient(Client):
     def __init__(self, host: str, model: str):
         self.host: str = host
         self.model: str = model
-        self.context = "Отвечай только на русском. Для ответа используй следующую информацию: "
+        self.context: str = ""
+        self.question: str = ""
+        self.template: str = f"""Use the following pieces of information to answer the user's question.
+            If you don't know the answer, just say that you don't know, don't try to make up an answer.
+            Context: {self.context}
+            Question: {self.question}
+            Only return the helpful answer below and nothing else.
+            Helpful answer in Russian:
+        """
         super().__init__(host=self.host)
 
     # Метод, который ищет в json файле раздел с определённым названием и топиком, добавляет его в контекст
@@ -24,7 +31,7 @@ class OllamaClient(Client):
                     if resultContext == "":
                         print("This topic doesn't exist")
                     else:
-                        self.context += str(resultContext)
+                        self.context = str(resultContext)
                 else:
                     print("This section doesn't exist")
 
@@ -34,12 +41,13 @@ class OllamaClient(Client):
             # Метод, который заносит в контекст информацию, которую пользователь подаёт в параметры
 
     def readContextFromParametr(self, context):
-        self.context += str(context)
+        self.context = str(context)
 
         # Метод, который обнуляет контекст
 
     def clearContext(self):
-        self.context = "Отвечай только на русском. Для ответа используй следующую информацию: "
+        self.question = ""
+        self.context = ""
 
         # Метод, который создаёт промпт, указывая в нём сообщение и роль: system или user
 
@@ -48,15 +56,28 @@ class OllamaClient(Client):
             "role": role,
             "content": message
         }
+    
+    def __updateTemplate(self):
+        self.template = f"""Use the following pieces of information to answer the user's question.
+            If you don't know the answer, just say that you don't know, don't try to make up an answer.
+            Context: {self.context}
+            Question: {self.question}
+            Only return the helpful answer below and nothing else.
+            Helpful answer in Russian:
+        """
 
     # Метод, который отправляет промпт модели с учётом контекста и возвращает ответ
     def sendPrompt(self, userMessage):
-        system_prompt = self.__createPromt(self.context, "system")
-        user_prompt = self.__createPromt(userMessage, "user")
+        self.question = userMessage
+        self.__updateTemplate()
+        system_prompt = self.__createPromt(self.template, "user")
+        print(self.model)
+        ## user_prompt = self.__createPromt(userMessage, "user")
         response = self.chat(model=self.model, messages=[
-            system_prompt,
-            user_prompt,
+            system_prompt
         ])
+
+        print(response)
 
         self.clearContext()
 
