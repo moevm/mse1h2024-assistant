@@ -8,7 +8,7 @@
         v-model="course"
       />
       <v-select
-        label="Выберите предмет"
+        label="Выберите раздел"
         :items="subjects"
         variant="outlined"
         :disabled="this.course.length < 1"
