@@ -3,20 +3,21 @@
     <v-card id="chat" style="box-shadow: none">
       <v-card-text id="messages" style="padding: 0">
         <v-list-item v-for="(message, index) in messages" :key="index">
-            <v-list-item-title :class="message.me ? 'text-right' : 'text-left'">
-              <v-chip :color="message.me ? 'primary' : ''">{{ message.content }}</v-chip>
-              <v-list-item-subtitle>{{ message.created_at }}</v-list-item-subtitle>
-            </v-list-item-title>
+          <v-list-item-title style="height: max-content;" :class="message.me ? 'text-right' : 'text-left'">
+            <v-chip :color="message.me ? 'primary' : ''" style="white-space: pre-wrap; display: inline-block; max-width: 40%; width: max-content;
+             text-align: left; word-break: break-word; height: max-content; border-radius: 10px"> {{ message.content }} </v-chip>
+            <v-list-item-subtitle>{{ message.created_at }}</v-list-item-subtitle>
+          </v-list-item-title>
         </v-list-item>
       </v-card-text>
 
 
 
       <v-card-actions class="d-flex justify-center" style="padding: 0; margin-right: 8px; height: 72px;">
-        <v-text-field v-show="text_visible" v-model="newMessage" label="Сообщение" style="margin: 8px" hide-details></v-text-field>
+        <v-text-field v-show="text_visible" v-model="newMessage" @keyup.enter="send_message" label="Сообщение" style="margin: 8px" hide-details></v-text-field>
         <v-btn class="button" v-show="send_text_visible" @click="send_message" color="primary" icon="mdi-send-variant-outline"></v-btn>
         <v-btn class="button" v-show="open_voice_visible" @click="start_voice" color="primary" style="margin: 0" icon="mdi-microphone-outline"></v-btn>
-        <div v-show="isRunning" style="margin-right: 5px">Запись: {{ formatTime }}</div>
+        <p v-show="isRunning">Запись:</p><div id="indicator" v-show="isRunning">{{ formatTime }}</div>
         <audio v-show="player_visible" controls ref="audioPlayer" :src="audioSrc" type="audio/mpeg"></audio>
         <v-btn class="button" v-show="stop_voice_visible" @click="stop_voice" color="primary" style="margin: 0" icon="mdi-pause"></v-btn>
         <v-btn class="button" v-show="send_voice_visible" @click="send_voice" color="primary" icon="mdi-send-variant-outline"></v-btn>
@@ -37,7 +38,7 @@ export default {
     return {
       text_visible: true,
       send_text_visible: true,
-      open_voice_visible: true,
+      open_voice_visible: false,
       send_voice_visible: false,
       delete_voice_visible: false,
       player_visible: false,
@@ -56,12 +57,30 @@ export default {
     }
   },
 
+  created() {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(() => {
+          this.open_voice_visible = true;
+        })
+        .catch(error => {
+          console.error('Ошибка доступа к микрофону:', error);
+          alert('Не удалось получить доступ к микрофону');
+        });
+  },
+
   computed: {
     formatTime() {
       const minutes = Math.floor(this.time / 60);
       const seconds = (this.time % 60).toFixed(1); // Форматируем с точностью до одного знака после запятой
       return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     }
+  },
+
+  mounted() {
+    document.addEventListener('keydown', this.handleKeyPress);
+  },
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.handleKeyPress);
   },
 
   methods: {
@@ -149,7 +168,7 @@ export default {
       this.close_voice()
 
       if(this.mediaRecorder) this.mediaRecorder.stop();
-
+      
       const formData = new FormData();
       formData.append("audio", this.audioBlob)
 
@@ -157,6 +176,15 @@ export default {
           this.$store.getters.getState.subject,
           formData)
           .then(res => this.create_message(res, false))
+    },
+
+    handleKeyPress(event) {
+      if (this.send_voice_visible && event.key === 'Enter') {
+          this.send_voice();
+      }
+      else if (this.delete_voice_visible && event.key === 'Escape') {
+        this.delete_voice();
+      }
     },
 
     stop_voice(){
@@ -189,11 +217,15 @@ export default {
 </script>
 
 <style scoped>
+  #indicator{
+    margin: 10px;
+    animation:blinkingOpacity 1s infinite alternate;
+  }
 
   #chat {
     position: relative;
     background: none;
-    min-width: 50%;
+    width: 50%;
     height: 93vh;
   }
   #messages {
@@ -209,6 +241,15 @@ export default {
     top: 0;
     right: 0;
     background-color: transparent;
+  }
+
+  @keyframes blinkingOpacity {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0.4;
+    }
   }
 
 </style>
