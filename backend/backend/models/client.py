@@ -1,20 +1,20 @@
 from ollama import Client
 import json
+import ollama
 
-class OllamaClient(Client):
+class OllamaClient():
     def __init__(self, host: str, model: str):
         self.host: str = host
         self.model: str = model
         self.context: str = ""
         self.question: str = ""
-        self.template: str = f"""Use the following pieces of information to answer the user's question.
-            If you don't know the answer, just say that you don't know, don't try to make up an answer.
-            Context: {self.context}
-            Question: {self.question}
-            Only return the helpful answer below and nothing else.
-            Helpful answer in Russian:
+        self.template: str = f"""Дайте ответ, основываясь на информации, содержащейся в представленном тексте. 
+        Если ответ на вопрос не может быть определен из текста, укажите, что ответ в тексте отсутствует.
+        Текст: {self.context}. 
+        Вопрос: {self.question}. 
+        Верните только соответствующий ответ ниже и ничего больше. 
+        Релевантный ответ на русском языке:
         """
-        super().__init__(host=self.host)
 
     # Метод, который ищет в json файле раздел с определённым названием и топиком, добавляет его в контекст
     def readContextFromFile(self, file, titleOfChapter, titleOfTopic):
@@ -42,7 +42,6 @@ class OllamaClient(Client):
 
     def readContextFromParametr(self, context):
         self.context = str(context)
-
         # Метод, который обнуляет контекст
 
     def clearContext(self):
@@ -57,13 +56,14 @@ class OllamaClient(Client):
             "content": message
         }
     
+    
     def __updateTemplate(self):
-        self.template = f"""Use the following pieces of information to answer the user's question.
-            If you don't know the answer, just say that you don't know, don't try to make up an answer.
-            Context: {self.context}
-            Question: {self.question}
-            Only return the helpful answer below and nothing else.
-            Helpful answer in Russian:
+        self.template = f"""Дайте ответ, основываясь на информации, содержащейся в представленном тексте. 
+        Если ответ на вопрос не может быть определен из текста, ответьте "Ответ на странице не найден".
+        Текст: {self.context}. 
+        Вопрос: {self.question}. 
+        Верните только соответствующий ответ ниже и ничего больше. 
+        Релевантный ответ на русском языке:
         """
 
     # Метод, который отправляет промпт модели с учётом контекста и возвращает ответ
@@ -72,8 +72,8 @@ class OllamaClient(Client):
         self.__updateTemplate()
         system_prompt = self.__createPromt(self.template, "user")
         print(self.model)
-        ## user_prompt = self.__createPromt(userMessage, "user")
-        response = self.chat(model=self.model, messages=[
+        print(system_prompt)
+        response = ollama.chat(model=self.model, messages=[
             system_prompt
         ])
 
