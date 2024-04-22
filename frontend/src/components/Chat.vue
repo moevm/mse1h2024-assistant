@@ -58,14 +58,15 @@ export default {
   },
 
   created() {
-    navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(() => {
-          this.open_voice_visible = true;
-        })
-        .catch(error => {
-          console.error('Ошибка доступа к микрофону:', error);
-          alert('Не удалось получить доступ к микрофону');
-        });
+
+    // navigator.mediaDevices.getUserMedia({ audio: true })
+    //     .then(() => {
+    //       this.open_voice_visible = true;
+    //     })
+    //     .catch(error => {
+    //       console.error('Ошибка доступа к микрофону:', error);
+    //       alert('Не удалось получить доступ к микрофону');
+    //     });
   },
 
   computed: {
