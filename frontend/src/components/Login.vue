@@ -17,7 +17,7 @@
       <v-btn
         @click="start"
         class="login_btn, button"
-        :disabled="!this.subject || !this.course"
+        :disabled="this.subject === '' || this.course === ''"
         data-testid="start-test"
       >
         Начать

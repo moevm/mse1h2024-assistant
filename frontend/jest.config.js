@@ -16,5 +16,4 @@ module.exports = {
         "^vuetify/directives$": "<rootDir>/node_modules/vuetify/lib/directives/index.mjs",
     },
     transformIgnorePatterns: ['/node_modules/(?!(vuetify)/)'],
-
 };
