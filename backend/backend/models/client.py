@@ -6,7 +6,7 @@ class OllamaClient(Client):
     def __init__(self, host: str, model: str):
         self.host: str = host
         self.model: str = model
-        self.context = "Отвечай только на русском. Для ответа используй следующую информацию: "
+        self.context = "Говори по-русски. Что ты можешь ответить на заданный вопрос, использую только следующую информацию: "
         super().__init__(host=self.host)
 
     # Метод, который ищет в json файле раздел с определённым названием и топиком, добавляет его в контекст
@@ -39,7 +39,7 @@ class OllamaClient(Client):
         # Метод, который обнуляет контекст
 
     def clearContext(self):
-        self.context = "Отвечай только на русском. Для ответа используй следующую информацию: "
+        self.context = "Говори по-русски. Найди информацию на предлагаемый вопрос из такого текста: "
 
         # Метод, который создаёт промпт, указывая в нём сообщение и роль: system или user
 
@@ -56,7 +56,7 @@ class OllamaClient(Client):
         response = self.chat(model=self.model, messages=[
             system_prompt,
             user_prompt,
-        ])
+        ], options={'temperature': 0})
 
         self.clearContext()
 
