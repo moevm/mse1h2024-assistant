@@ -6,7 +6,6 @@
         :items="courses"
         variant="outlined"
         v-model="course"
-        data-testid="course-test"
       />
       <v-select
         label="Выберите раздел"
@@ -14,13 +13,11 @@
         variant="outlined"
         :disabled="this.course.length < 1"
         v-model="subject"
-        data-testid="subject-test"
       />
       <v-btn
         @click="start"
         class="login_btn, button"
         :disabled="this.subject.length < 1 || this.course.length < 1"
-        data-testid="start-test"
       >
         Начать
       </v-btn>
@@ -30,7 +27,6 @@
 
 <script>
 import {get_courses} from "@/requests";
-import {instance} from "@/main";
 
 export default {
   name: 'Login',

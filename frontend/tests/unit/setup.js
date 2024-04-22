@@ -1,7 +1,9 @@
-import { config } from '@vue/test-utils'
-
-config.global.mocks = {
-    $vuetify: {
-        // Здесь вы можете добавить свойства и методы vuetify, необходимые в ваших тестах
-    }
-}
+// import '@testing-library/jest-dom/extend-expect';
+// import Vue from 'vue';
+// import Vuetify from 'vuetify';
+//
+// Vue.use(Vuetify);
+//
+// const app = document.createElement('div');
+// app.setAttribute('data-app', 'true');
+// document.body.appendChild(app);
