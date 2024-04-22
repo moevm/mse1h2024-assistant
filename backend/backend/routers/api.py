@@ -4,8 +4,8 @@ from typing import Dict
 from backend.models.request import TextRequest
 from backend.models.client import OllamaClient
 from backend.settings import config
-import requests
 import os
+import requests
 
 router = APIRouter(
     prefix='/api',
@@ -29,7 +29,7 @@ def ask_model_by_text(request: TextRequest):
 
 @router.post("/send_voice_request")
 async def handle_voice_request(request: Request):
-    url = "http://172.19.0.4:9000/asr"
+    url = config.whisper
     form = await request.form()
     form_dict: Dict = form.__dict__['_dict']
 
@@ -51,7 +51,7 @@ async def handle_voice_request(request: Request):
     transcription = requests.post(url, json=payload, headers=headers, data=form_dict['audio'])
 
     print("Transcript: ", transcription.text)
-    modelClient.readContextFromFile(os.path.join(dirname, '../../parser/new_data.json'), course, subject)
+    modelClient.readContextFromFile(os.path.join(dirname, '../../parser/new_data.json'), form_dict['course'], form_dict['subject'])
     answer = modelClient.sendPrompt(transcription.text)
     return {'text': answer}
 

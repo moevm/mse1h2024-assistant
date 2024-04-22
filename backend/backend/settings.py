@@ -10,6 +10,7 @@ class Config(BaseModel):
     port: int
     ollama_url: str
     current_model: str
+    whisper: str
 
 
 class ConfigWrapper:
@@ -23,6 +24,7 @@ class ConfigWrapper:
             port=self._config_wrapper.get('server', 'port'),
             ollama_url=self._config_wrapper.get('model', 'url'),
             current_model=self._config_wrapper.get('model', 'name'),
+            whisper=self._config_wrapper.get("whisper", "url"),
         )
 
     @property
