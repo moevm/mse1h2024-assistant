@@ -7,7 +7,6 @@ import '@testing-library/jest-dom'
 
 describe('Chat', () => {
     it('должен отображать начальное состояние компонента', () => {
-        // Рендерим компонент
         customRender(Chat);
 
         expect(screen.getByTestId('text-test')).toBeInTheDocument();

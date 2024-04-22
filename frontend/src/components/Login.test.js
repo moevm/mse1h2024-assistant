@@ -3,7 +3,6 @@ import Login from '@/components/Login.vue'
 import '@testing-library/jest-dom'
 import customRender from "@/customRender";
 
-// Мокируем get_courses из "@/requests"
 jest.mock('@/requests', () => ({
     get_courses: jest.fn().mockResolvedValue({
         course1: ['subject1', 'subject2'],

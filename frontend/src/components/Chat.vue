@@ -66,13 +66,10 @@ export default {
             this.open_voice_visible = true;
           })
           .catch(error => {
-            // Ошибка доступа к микрофону
             console.log('Ошибка доступа к микрофону:', error);
-            //alert('Не удалось получить доступ к микрофону');
           });
     } else {
       console.log('getUserMedia не поддерживается в этом браузере');
-      //alert('Ваш браузер не поддерживает функцию записи аудио');
     }
   },
 
