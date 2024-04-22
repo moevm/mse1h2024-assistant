@@ -17,7 +17,7 @@ describe('Login.vue', () => {
         debug()
     })
 
-    it('отображает поля выбора курса и раздела и проверяет на пустоту', async () => {
+    it('отображает поля выбора курса и раздела', async () => {
         // Рендерим компонент
         customRender(Login)
 
@@ -27,6 +27,14 @@ describe('Login.vue', () => {
         // Проверяем, что поля выбора курса и раздела отображаются
         expect(course).toBeInTheDocument()
         expect(subject).toBeInTheDocument()
+    })
+
+    it('проверяет на пустоту курс и предмет', async () => {
+        // Рендерим компонент
+        customRender(Login)
+
+        const course = await screen.getByLabelText('Выберите номер курса')
+        const subject = await screen.getByLabelText('Выберите раздел')
 
         expect(course.value).toBe('')
         expect(subject.value).toBe('')
@@ -45,11 +53,11 @@ describe('Login.vue', () => {
         customRender(Login)
 
         const course = await screen.getByLabelText('Выберите номер курса')
-        const startButton = await screen.getByText('Начать')
+        const startButton = await screen.getByText('Начать').closest("button")
 
         await fireEvent.change(course, { target: { value: 'course1' } });
 
-        expect(startButton).toBeEnabled()
+        expect(startButton).toBeDisabled()
     })
 
     it('выбирает курс, предмет и проверят доступность "Начать" и корректность предмета', async () => {
@@ -57,7 +65,7 @@ describe('Login.vue', () => {
 
         const course = await screen.getByLabelText('Выберите номер курса')
         const subject = await screen.getByLabelText('Выберите раздел')
-        const startButton = await screen.getByText('Начать')
+        const startButton = await screen.getByText('Начать').closest("button")
 
         await fireEvent.change(course, { target: { value: 'course1' } });
         await fireEvent.change(subject, { target: { value: 'subject1' } });
