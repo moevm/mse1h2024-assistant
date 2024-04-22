@@ -8,7 +8,7 @@ jest.mock('@/requests', () => ({
     get_courses: jest.fn().mockResolvedValue({
         course1: ['subject1', 'subject2'],
         course2: ['subject3', 'subject4']
-    })
+    }),
 }))
 
 describe('Login.vue', () => {
@@ -17,7 +17,7 @@ describe('Login.vue', () => {
         debug()
     })
 
-    it('отображает поля выбора курса и раздела', async () => {
+    it('отображает поля выбора курса и раздела и проверяет на пустоту', async () => {
         // Рендерим компонент
         customRender(Login)
 
@@ -27,24 +27,29 @@ describe('Login.vue', () => {
         // Проверяем, что поля выбора курса и раздела отображаются
         expect(course).toBeInTheDocument()
         expect(subject).toBeInTheDocument()
+
+        expect(course.value).toBe('')
+        expect(subject.value).toBe('')
     })
 
-    it('отображает кнопку "Начать" и проверяет ее доступность', async () => {
+    it('отображает кнопку "Начать" и проверяет ее недоступность и недоступность выбора предмета', async () => {
         customRender(Login)
-        const startButton = await screen.getByText('Начать')
-        expect(startButton).toBeInTheDocument()
+        const startButton = await screen.getByText('Начать').closest("button")
+        const subject = await screen.getByLabelText('Выберите раздел')
+
+        expect(startButton).toBeDisabled()
+        expect(subject).toBeDisabled()
     })
 
     it('выбирает курс и проверят недоступность "Начать"', async () => {
-        // Рендерим компонент
         customRender(Login)
 
         const course = await screen.getByLabelText('Выберите номер курса')
         const startButton = await screen.getByText('Начать')
 
-        await fireEvent.select(course, 'course1')
+        await fireEvent.change(course, { target: { value: 'course1' } });
 
-        expect(startButton).toBeDisabled()
+        expect(startButton).toBeEnabled()
     })
 
     it('выбирает курс, предмет и проверят доступность "Начать" и корректность предмета', async () => {
@@ -58,8 +63,9 @@ describe('Login.vue', () => {
         await fireEvent.change(subject, { target: { value: 'subject1' } });
 
         expect(course.value).toBe('course1')
+        expect(subject.value).toBe('subject1')
 
-        expect(startButton).not.toBeDisabled()
+        expect(startButton).toBeEnabled()
     })
 
     it('запускает сессию при нажатии на кнопку "Начать"', async () => {
