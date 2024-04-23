@@ -106,8 +106,7 @@ export default {
       if (this.newMessage.trim() !== '') {
         this.create_message(this.newMessage, true)
         post_text_request(this.$store.getters.getState.course,
-            this.$store.getters.getState.subject, this.newMessage)
-            .then(res => this.create_message(res, false))
+            this.$store.getters.getState.subject, this.newMessage, (res) => this.create_message(res, false));
         this.newMessage = '';
       }
     },
