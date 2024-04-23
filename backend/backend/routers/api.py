@@ -4,7 +4,7 @@ from typing import Dict
 from backend.models.request import TextRequest, MultipleTasksRequest
 from backend.models.client import OllamaClient
 from backend.settings import config
-from backend.celery.worker import example_task
+from backend.celery.worker import example_task, text_request_handling
 from backend.celery.tasks import getTaskResult, getTasksStatus, deleteTasks
 import requests
 import os
@@ -25,13 +25,12 @@ def root():
 
 @router.post("/ask_model_by_text_request")
 def ask_model_by_text(request: TextRequest):
-    modelClient.readContextFromFile(os.path.join(dirname, '../../parser/new_data.json'), request.course, request.subject)
-    answer = modelClient.sendPrompt(request.text)
-    return {'text': answer}
+    task = text_request_handling.apply_async([],{"request": request.text, "course": request.course, "subject": request.subject})
+    return {'text': task.id}
 
 @router.post("/send_voice_request")
 async def handle_voice_request(request: Request):
-    url = "http://172.19.0.4:9000/asr"
+    url = "http://whisper:9000/asr"
     form = await request.form()
     form_dict: Dict = form.__dict__['_dict']
 
@@ -53,9 +52,8 @@ async def handle_voice_request(request: Request):
     transcription = requests.post(url, json=payload, headers=headers, data=form_dict['audio'])
 
     print("Transcript: ", transcription.text)
-    modelClient.readContextFromFile(os.path.join(dirname, '../../parser/new_data.json'), course, subject)
-    answer = modelClient.sendPrompt(transcription.text)
-    return {'text': answer}
+    task = text_request_handling.apply_async([],{"request": transcription.text, "course": form_dict['course'], "subject": form_dict['subject']})
+    return {'text': task.id}
 
 
 
