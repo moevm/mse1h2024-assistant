@@ -51,6 +51,7 @@ async def handle_voice_request(request: Request):
     url = "http://whisper:9000/asr"
     form = await request.form()
     form_dict: Dict = form.__dict__['_dict']
+    content = await form_dict['audio'].read()
 
     payload = {
         "input": {
@@ -61,15 +62,18 @@ async def handle_voice_request(request: Request):
             "word_timestamps": False,
             "output": "txt"
         },
+        'audio_file': str(content),
     }
     headers = {
-        'content_type':'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
+        'content_type':'multipart/form-data'
     }
-    print(form_dict)
+    print(form_dict, headers)
 
-    content = await form_dict['audio'].read()
-
-    transcription = requests.post(url, json=payload, headers=headers, data=content)
+    transcription = requests.post(
+        url, 
+        json=payload, 
+        headers=headers,
+    )
 
     print("Transcript: ", transcription.text)
     task = text_request_handling.apply_async([],{"request": transcription.text, "course": form_dict['course'], "subject": form_dict['subject']})
