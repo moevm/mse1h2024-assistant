@@ -63,15 +63,17 @@ async def handle_voice_request(request: Request):
         },
     }
     headers = {
-        "content-type": 'multipart/form-data'
+        'content_type':'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
     }
     print(form_dict)
 
-    transcription = requests.post(url, json=payload, headers=headers, data=form_dict['audio'])
+    content = await form_dict['audio'].read()
+
+    transcription = requests.post(url, json=payload, headers=headers, data=content)
 
     print("Transcript: ", transcription.text)
     task = text_request_handling.apply_async([],{"request": transcription.text, "course": form_dict['course'], "subject": form_dict['subject']})
-    return {'text': task.id}
+    return {'text': 'task.id'}
 
 
 
