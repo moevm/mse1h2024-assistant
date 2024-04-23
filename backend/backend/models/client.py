@@ -56,7 +56,7 @@ class OllamaClient(Client):
         response = self.chat(model=self.model, messages=[
             system_prompt,
             user_prompt,
-        ])
+        ], options={'temperature': 0})
 
         self.clearContext()
 
