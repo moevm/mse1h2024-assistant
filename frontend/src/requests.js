@@ -26,3 +26,8 @@ export async function post_voice_request(course, subject, formData){
 
   return response.data.text;
 }
+
+export async function get_courses(){
+    let response =  await instance.get('/api/get_courses')
+    return response.data
+}

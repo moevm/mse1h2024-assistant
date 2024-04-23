@@ -6,8 +6,10 @@ from backend.models.client import OllamaClient
 from backend.settings import config
 from backend.celery.worker import example_task, text_request_handling
 from backend.celery.tasks import getTaskResult, getTasksStatus, deleteTasks
+from backend.translator.translator import translate
 import requests
 import os
+import json
 
 router = APIRouter(
     prefix='/api',
@@ -21,6 +23,22 @@ dirname = os.path.dirname(__file__)
 @router.get("/")
 def root():
     return {"message": "Hello World"}
+
+
+@router.get("/get_courses")
+def send_courses():
+    with open("./parser/new_data.json", encoding="utf-8") as json_file:
+        data = json.load(json_file)
+    res = {}
+    for i in list(data.keys()):
+        if i != "date":
+            course = i
+            if course == "info":
+                course = "Информация"
+            res[course] = []
+            for item in data[i]:
+                res[course].append(item["name"])
+    return res
 
 
 @router.post("/ask_model_by_text_request")

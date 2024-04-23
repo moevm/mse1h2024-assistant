@@ -12,6 +12,9 @@ class Config(BaseModel):
     current_model: str
     celery_broker_url: str
     celery_backend_url: str
+    translation_service: str
+    translation_language: str
+    translation_length_limit: int
 
 
 class ConfigWrapper:
@@ -27,6 +30,9 @@ class ConfigWrapper:
             current_model=self._config_wrapper.get('model', 'name'),
             celery_broker_url=self._config_wrapper.get('celery', 'broker_url'),
             celery_backend_url=self._config_wrapper.get('celery', 'backend_url'),
+            translation_service=self._config_wrapper.get('translation', 'service'),
+            translation_language=self._config_wrapper.get('translation', 'language'),
+            translation_length_limit=self._config_wrapper.get('translation', 'length_limit'),
         )
 
     @property

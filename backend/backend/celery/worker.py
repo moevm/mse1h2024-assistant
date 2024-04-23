@@ -4,6 +4,7 @@ import requests
 from celery import Celery
 from backend.settings import config
 from backend.models.client import OllamaClient
+from backend.translator.translator import translate
 
 broker = config.celery_broker_url
 backend = config.celery_backend_url
@@ -25,4 +26,5 @@ def example_task(text = ""):
 def text_request_handling(request = "", course = "", subject = ""):
     modelClient.readContextFromFile(os.path.join(dirname, '../../parser/new_data.json'), course, subject)
     answer = modelClient.sendPrompt(request)
+    answer = translate(answer)
     return answer
