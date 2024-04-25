@@ -10,6 +10,7 @@ from backend.translator.translator import translate
 import requests
 import os
 import json
+import base64
 
 router = APIRouter(
     prefix='/api',
@@ -50,9 +51,12 @@ def ask_model_by_text(request: TextRequest):
 async def handle_voice_request(request: Request):
     url = "http://whisper:9000/asr"
     form = await request.form()
-    form_dict: Dict = form.__dict__['_dict']
-    content = await form_dict['audio'].read()
 
+    form_dict: Dict = form.__dict__['_dict']
+    print(form_dict)
+    content: UploadFile = form_dict['audio']
+    content = await content.read()
+    rv = base64.b64encode(content).decode()
     payload = {
         "input": {
             "encode": True,
@@ -60,9 +64,8 @@ async def handle_voice_request(request: Request):
             "language": "ru",
             "vad_filter": True,
             "word_timestamps": False,
-            "output": "txt"
+            "output": "txt",
         },
-        'audio_file': str(content),
     }
     headers = {
         'content_type':'multipart/form-data'
@@ -71,7 +74,8 @@ async def handle_voice_request(request: Request):
 
     transcription = requests.post(
         url, 
-        json=payload, 
+        params=payload,
+        data=rv,
         headers=headers,
     )
 
