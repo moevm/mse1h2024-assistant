@@ -1,14 +1,26 @@
 import {instance} from "@/main";
 
-export async function post_text_request(course, subject, text){
+export async function post_text_request(course, subject, text, callback){
     console.log("SEND: " + {course: course,
         subject: subject,
         text: text})
     let response = await instance.post("/api/ask_model_by_text_request", {course: course,
       subject: subject,
-      text: text})
-      console.log("RESPONSE: " + response.data.text);
-    return response.data.text;
+       text: text})
+    const interval = setInterval(() => {
+        get_task_result(response.data.text)
+        .then(res => {
+            if(res.data.task_status == 'SUCCESS') {
+                clearInterval(interval);
+                callback(res.data.task_result);
+            }
+            console.log("res: ", res);
+        })
+    }, 5000);
+}
+
+export async function get_task_result(task_id) {
+    return await instance.get("/api/tasks/" + task_id);
 }
 
 export async function post_voice_request(course, subject, formData){
