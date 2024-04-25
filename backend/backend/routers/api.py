@@ -40,7 +40,6 @@ def send_courses():
                 res[course].append(item["name"])
     return res
 
-
 @router.post("/ask_model_by_text_request")
 def ask_model_by_text(request: TextRequest):
     task = text_request_handling.apply_async([],{"request": request.text, "course": request.course, "subject": request.subject})
