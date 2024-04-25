@@ -17,7 +17,8 @@
       <v-btn
         @click="start"
         class="login_btn, button"
-        :disabled="this.subject.length < 1 || this.course.length < 1"
+        :disabled="this.subject === '' || this.course === ''"
+        data-testid="start-test"
       >
         Начать
       </v-btn>
@@ -27,7 +28,6 @@
 
 <script>
 import {get_courses} from "@/requests";
-import {instance} from "@/main";
 
 export default {
   name: 'Login',
@@ -59,7 +59,7 @@ export default {
 
   methods: {
     start(){
-      this.$store.commit('setCourse', `${this.course} курс`);
+      this.$store.commit('setCourse', this.course);
       this.$store.commit('setSubject', this.subject);
       console.log(this.$store.getters.getState)
       this.$router.push('/chat');

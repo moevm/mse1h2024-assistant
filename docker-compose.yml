@@ -19,15 +19,18 @@ services:
       - frontend
     networks:
       - main
+
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    build: ./backend
     container_name: backend
+    volumes:
+      - ./backend:/backend
+    command: ["python", "-m", "backend"]
     ports: 
       - "5000:5000"
     networks:
       - main
+
   ollama:
     image: ollama/ollama
     container_name: ollama
@@ -51,6 +54,7 @@ services:
               capabilities: [ gpu ]
     networks:
       - main
+
   whisper:
     image: onerahmet/openai-whisper-asr-webservice:latest-gpu
     container_name: whisper
@@ -66,6 +70,23 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [ gpu ]
+    networks:
+      - main
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: celery -A backend.celery.worker.celery worker
+    depends_on:
+      - redis
+    networks:
+      - main
+
+  redis:
+    image: redis:7
+    ports:
+      - 6379:6379
     networks:
       - main
 
