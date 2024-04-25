@@ -21,6 +21,10 @@ modelClient = OllamaClient(config.ollama_url, config.current_model)
 dirname = os.path.dirname(__file__)
 
 
+def request_wrapper(method, *args, **kwargs) -> requests.Response:
+    return method(*args, **kwargs)
+
+
 @router.get("/")
 def root():
     return {"message": "Hello World"}
@@ -50,9 +54,10 @@ def ask_model_by_text(request: TextRequest):
 async def handle_voice_request(request: Request):
     url = "http://whisper:9000/asr"
     form = await request.form()
+    print(form)
 
     form_dict: Dict = form.__dict__['_dict']
-    print(form_dict)
+    # print(form_dict)
     content: UploadFile = form_dict['audio']
     content = await content.read()
     rv = base64.b64encode(content).decode()
@@ -71,7 +76,8 @@ async def handle_voice_request(request: Request):
     }
     print(form_dict, headers)
 
-    transcription = requests.post(
+    transcription = request_wrapper(
+        requests.post,
         url, 
         params=payload,
         data=rv,
