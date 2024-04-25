@@ -80,7 +80,7 @@ async def handle_voice_request(request: Request):
 
     print("Transcript: ", transcription.text)
     task = text_request_handling.apply_async([],{"request": transcription.text, "course": form_dict['course'], "subject": form_dict['subject']})
-    return {'text': 'task.id'}
+    return {'text': task.id}
 
 
 
