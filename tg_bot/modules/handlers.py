@@ -1,23 +1,37 @@
 import requests
 import json
+import time
 
 
 def send_text_to_backend(backend_url, course, subject, question, logger):
     payload = {'course': course, 'subject': subject, 'text': question}
     encoded_payload = json.dumps(payload, ensure_ascii=False).encode('utf-8')
     logger.info("Отправка данных на бэкэнд: %s", encoded_payload.decode('utf-8'))
-    try:
-        response = requests.post(backend_url, encoded_payload)
-        response_data = response.json()
-        response_text = response_data.get("text")
-        if response_text:
-            logger.info("Получен ответ от сервера: %s", response_text)
-            return response_text
-        else:
-            logger.warning("В ответе отсутствует поле 'text': %s", response_data)
-            return None
-    except Exception as e:
-        logger.error("Произошла ошибка при отправке данных на бэкэнд: %s", str(e))
+
+    response = requests.post(f"{backend_url}/api/ask_model_by_text_request", encoded_payload)
+    task_id = response.json().get('text')
+
+    if task_id:
+        get_task_result(task_id, backend_url, print_result)
+    else:
+        logger("В ответе отсутствует поле 'text'")
+
+
+def get_task_result(task_id, backend_url, callback):
+    while True:
+        response = requests.get(f"{backend_url}/api/tasks/{task_id}")
+        data = response.json()
+
+        if data.get('task_status') == 'SUCCESS':
+            callback(data.get('task_result'))
+            break
+
+        print(f"res: {data}")
+        time.sleep(5)
+
+
+def print_result(result):
+    print(f"Result: {result}")
 
 
 def handle_text_message(message, user_data, bot, backend_url, logger):
