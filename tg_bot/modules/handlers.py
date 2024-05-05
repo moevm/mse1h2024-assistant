@@ -12,26 +12,22 @@ def send_text_to_backend(backend_url, course, subject, question, logger):
     task_id = response.json().get('text')
 
     if task_id:
-        get_task_result(task_id, backend_url, print_result)
+        result = get_task_result(task_id, backend_url, logger)
+        return result
     else:
         logger("В ответе отсутствует поле 'text'")
 
 
-def get_task_result(task_id, backend_url, callback):
+def get_task_result(task_id, backend_url, logger):
     while True:
         response = requests.get(f"{backend_url}/api/tasks/{task_id}")
         data = response.json()
 
         if data.get('task_status') == 'SUCCESS':
-            callback(data.get('task_result'))
-            break
+            return data.get('task_result')
 
-        print(f"res: {data}")
+        logger(f"res: {data}")
         time.sleep(5)
-
-
-def print_result(result):
-    print(f"Result: {result}")
 
 
 def handle_text_message(message, user_data, bot, backend_url, logger):
