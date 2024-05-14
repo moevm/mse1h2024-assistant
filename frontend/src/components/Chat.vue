@@ -178,8 +178,8 @@ export default {
 
       post_voice_request(this.$store.getters.getState.course,
           this.$store.getters.getState.subject,
-          formData)
-          .then(res => this.create_message(res, false))
+          formData, 
+          (res) => this.create_message(res, false))
     },
 
     handleKeyPress(event) {
