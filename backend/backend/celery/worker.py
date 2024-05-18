@@ -22,6 +22,10 @@ def example_task(text = ""):
     time.sleep(30)
     return "[HANDELED] " + text
 
+@celery.task(name="completed_task")
+def completed_task(text = ""):
+    return text
+
 @celery.task(name="text_request_handling")
 def text_request_handling(request = "", course = "", subject = ""):
     modelClient.readContextFromFile(os.path.join(dirname, '../../parser/new_data.json'), course, subject)
