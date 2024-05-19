@@ -172,13 +172,10 @@ export default {
       await this.stop_voice()
       this.close_voice()
 
-      const formData = new FormData();
-      formData.append("audio", this.audioBlob)
-
-      post_voice_request(this.$store.getters.getState.course,
+      setTimeout(() => post_voice_request(this.$store.getters.getState.course,
           this.$store.getters.getState.subject,
-          formData,
-          (res) => this.create_message(res, false))
+          this.audioBlob,
+          (res) => this.create_message(res, false)), 100)
     },
 
     handleKeyPress(event) {
