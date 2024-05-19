@@ -16,5 +16,23 @@ describe("API backend", () => {
         expect(response.status).toBe(200);
     });
 
+    it('should send voice message', async () => {
+        const formData = new FormData();
+        formData.append("audio", new Blob(this.chunks, {type: 'audio/mpeg'}));
+        formData.append("course");
+        formData.append("subject");
+        const response = await instance.post('/api/send_voice_request',
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }
+        )
+        expect(response.status).toBe(200);
+    });
+
+
+
 
 })
