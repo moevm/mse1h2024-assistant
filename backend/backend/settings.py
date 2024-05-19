@@ -15,6 +15,8 @@ class Config(BaseModel):
     translation_service: str
     translation_language: str
     translation_length_limit: int
+    whisper_host: str
+    whisper_port: int
 
 
 class ConfigWrapper:
@@ -33,6 +35,8 @@ class ConfigWrapper:
             translation_service=self._config_wrapper.get('translation', 'service'),
             translation_language=self._config_wrapper.get('translation', 'language'),
             translation_length_limit=self._config_wrapper.get('translation', 'length_limit'),
+            whisper_host=self._config_wrapper.get('whisper', 'host'),
+            whisper_port=self._config_wrapper.get('whisper', 'port'),
         )
 
     @property
