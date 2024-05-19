@@ -69,6 +69,9 @@ def handle_text_message(message, user_data, bot, backend_url, logger):
         course = user_data[message.from_user.id]['course']
         subject = user_data[message.from_user.id]['subject']
         question = message.text
+        if len(question) > 100:
+            bot.send_message(message.chat.id, "Длина сообщения не должна превышать 100 символов.")
+            return
         bot.reply_to(message, "Твое сообщение обрабатывается.")
         response_text = send_text_to_backend(backend_url, course, subject, question, logger)
         if response_text:
@@ -86,6 +89,9 @@ def handle_voice_message(message, user_data, bot, backend_url, logger):
         file_id = message.voice.file_id
         file_info = bot.get_file(file_id)
         voice_file = bot.download_file(file_info.file_path)
+        if message.voice.duration > 12:
+            bot.send_message(message.chat.id, "Длительность аудио не должна превышать 12 секунд.")
+            return
         voice_string = voice_file.decode('latin-1')
         bot.reply_to(message, "Твое голосовое сообщение обрабатывается.")
 
