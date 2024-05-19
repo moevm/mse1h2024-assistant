@@ -1,44 +1,46 @@
 import pytest
-from unittest.mock import Mock
+import requests
 import configparser
 
-from modules.handlers import handle_text_message, handle_voice_message
+from modules.handlers import send_text_to_backend, send_voice_to_backend, get_task_result
 from modules.logger import build_logger
 
 
-@pytest.fixture(scope="module")
-def logger():
-    return build_logger('test_logger')
+@pytest.fixture
+def backend_url():
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    return config.get('Backend', 'url')
 
 
-@pytest.fixture(scope="module")
-def mock_user_data():
-    return {}
+# def test_send_text_to_backend(backend_url):
+#     course = '1'
+#     subject = 'Информатика'
+#     question = 'Рейтинг'
+#     logger = build_logger('test_logger')
+#
+#     response = send_text_to_backend(backend_url, course, subject, question, logger)
+#
+#     assert response is not None
+#
+#
+# def test_send_voice_to_backend(backend_url):
+#     course = '1'
+#     subject = 'Информатика'
+#     audio_blob = b'audio_data'
+#     logger = build_logger('test_logger')
+#
+#     response = send_voice_to_backend(backend_url, course, subject, audio_blob, logger)
+#
+#     assert response is not None
 
 
-config = configparser.ConfigParser()
-config.read('config.ini')
-BACKEND_URL = config.get('Backend', 'url')
+def test_send_text_to_backend_with_long_message(backend_url):
+    course = '1'
+    subject = 'Информатика'
+    question = 'A' * 150
+    logger = build_logger('test_logger')
 
-bot = Mock()
+    response = send_text_to_backend(backend_url, course, subject, question, logger)
 
-
-def test_handle_text_message(logger, mock_user_data):
-    message = Mock()
-    message.from_user.id = 123456
-    mock_user_data[message.from_user.id] = {'state': 'course'}
-    message.text = "5"
-    handle_text_message(message, mock_user_data, bot, BACKEND_URL, logger)
-    assert mock_user_data[message.from_user.id]['state'] == 'subject'
-
-
-def test_handle_voice_message(logger, mock_user_data):
-    message = Mock()
-    message.from_user.id = 123456
-    mock_user_data[message.from_user.id] = {'state': 'course', 'course': '5', 'subject': 'Math'}
-    voice = Mock()
-    voice.file_id = "voice_file_id"
-    voice.duration = 15
-    message.voice = voice
-    handle_voice_message(message, mock_user_data, bot, BACKEND_URL, logger)
-    assert mock_user_data[message.from_user.id]['state'] == 'course'
+    assert response == "Длина сообщения не должна превышать 100 символов."
