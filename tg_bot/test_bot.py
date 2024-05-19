@@ -2,7 +2,7 @@ import pytest
 import configparser
 import wave
 import io
-from modules.handlers import send_text_to_backend, send_voice_to_backend, handle_voice_message, handle_text_message
+from modules.handlers import send_text_to_backend, send_voice_to_backend
 from modules.logger import build_logger
 
 
