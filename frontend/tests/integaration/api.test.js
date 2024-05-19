@@ -19,8 +19,8 @@ describe("API backend", () => {
     it('should send voice message', async () => {
         const formData = new FormData();
         formData.append("audio", new Blob([], {type: 'audio/mpeg'}));
-        formData.append("course");
-        formData.append("subject");
+        formData.append("course", "course");
+        formData.append("course", "subject");
         const response = await instance.post('/api/send_voice_request',
             formData,
             {
