@@ -167,18 +167,17 @@ export default {
       this.stopTimer()
     },
 
-    send_voice() {
+    async send_voice() {
       this.create_message("Голосовое отправлено", true)
+      await this.stop_voice()
       this.close_voice()
 
-      if(this.mediaRecorder) this.mediaRecorder.stop();
-      
       const formData = new FormData();
       formData.append("audio", this.audioBlob)
 
       post_voice_request(this.$store.getters.getState.course,
           this.$store.getters.getState.subject,
-          formData, 
+          formData,
           (res) => this.create_message(res, false))
     },
 
@@ -193,7 +192,7 @@ export default {
 
     stop_voice(){
       this.stop_voice_visible = false
-      this.mediaRecorder.stop();
+      if(this.mediaRecorder) this.mediaRecorder.stop();
       this.isRunning = false
       this.player_visible = true
       this.stopTimer()
