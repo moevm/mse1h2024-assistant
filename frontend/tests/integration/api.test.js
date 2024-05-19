@@ -20,7 +20,7 @@ describe("API backend", () => {
         const formData = new FormData();
         formData.append("audio", new Blob([], {type: 'audio/mpeg'}));
         formData.append("course", "course");
-        formData.append("course", "subject");
+        formData.append("subject", "subject");
         const response = await instance.post('/api/send_voice_request',
             formData,
             {
