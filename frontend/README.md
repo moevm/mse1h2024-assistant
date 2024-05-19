@@ -17,12 +17,12 @@ npm run build
 
 ### Unit tests
 ```
-npm unit_test
+npm run unit_test
 ```
 
 ### Integration tests (Перед началом тестирования нужно выполнить run.sh проекта)
 ```
-npm integration_test
+npm run integration_test
 ```
 
 ### Customize configuration
