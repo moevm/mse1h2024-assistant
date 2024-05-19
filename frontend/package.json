@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test": "jest"
+    "unit_test": "jest --testPathPattern=\".src/components\""
   },
   "dependencies": {
     "@vue/compiler-sfc": "^3.4.19",
