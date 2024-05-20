@@ -131,11 +131,11 @@ export default {
             this.mediaRecorder.ondataavailable = event => {
               this.chunks.push(event.data);
             };
-            this.mediaRecorder.onstop = () => {
-                const blob = new Blob(this.chunks, {type: 'audio/mpeg'});
-                this.audioBlob = blob;
+            this.mediaRecorder.onstop = async () => {
+                const blob = await new Blob(this.chunks, {type: 'audio/mpeg'});
+                this.audioBlob = await blob;
                 this.audioSrc = URL.createObjectURL(blob);
-                this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                await this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
                 this.mediaRecorder = null;
                 this.chunks = [];
             };
