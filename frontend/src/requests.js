@@ -23,10 +23,11 @@ export async function get_task_result(task_id) {
     return await instance.get("/api/tasks/" + task_id);
 }
 
-export async function post_voice_request(course, subject, formData, callback){
+export async function post_voice_request(course, subject, blob, callback){
+    const formData = new FormData();
+    formData.append("audio", blob)
   formData.append("course", course)
   formData.append("subject", subject)
-
     let response = await instance.post('/api/send_voice_request',
         formData,
         {
