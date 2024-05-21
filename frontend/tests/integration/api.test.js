@@ -1,4 +1,8 @@
-import {instance} from "@/main";
+import axios from "axios";
+
+const instance = axios.create({
+    baseURL: 'http://host.docker.internal:5000',  // Установка базового URL
+});
 
 describe("API backend", () => {
     it('should get courses and subjects', async () => {

@@ -20,7 +20,13 @@ npm run build
 npm run unit_test
 ```
 
-### Integration tests (Перед началом тестирования нужно выполнить run.sh проекта и перейти в папку frontend)
+### Integration tests 
+1) Выполнить 
+```run.sh```
+2) Собрать конейнер 
+```docker build -f DockerfileTest . -t test```
+3) Запустить контейнер```docker run test```
+##### Или запуск напрямую при наличии npm (предварительно перейти в папку frontend)
 ```
 npm run integration_test
 ```
