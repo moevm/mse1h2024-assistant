@@ -131,11 +131,11 @@ export default {
             this.mediaRecorder.ondataavailable = event => {
               this.chunks.push(event.data);
             };
-            this.mediaRecorder.onstop = () => {
-                const blob = new Blob(this.chunks, {type: 'audio/mpeg'});
-                this.audioBlob = blob;
+            this.mediaRecorder.onstop = async () => {
+                const blob = await new Blob(this.chunks, {type: 'audio/mpeg'});
+                this.audioBlob = await blob;
                 this.audioSrc = URL.createObjectURL(blob);
-                this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                await this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
                 this.mediaRecorder = null;
                 this.chunks = [];
             };
@@ -167,19 +167,15 @@ export default {
       this.stopTimer()
     },
 
-    send_voice() {
+    async send_voice() {
       this.create_message("Голосовое отправлено", true)
+      await this.stop_voice()
       this.close_voice()
 
-      if(this.mediaRecorder) this.mediaRecorder.stop();
-      
-      const formData = new FormData();
-      formData.append("audio", this.audioBlob)
-
-      post_voice_request(this.$store.getters.getState.course,
+      setTimeout(() => post_voice_request(this.$store.getters.getState.course,
           this.$store.getters.getState.subject,
-          formData, 
-          (res) => this.create_message(res, false))
+          this.audioBlob,
+          (res) => this.create_message(res, false)), 100)
     },
 
     handleKeyPress(event) {
@@ -193,7 +189,7 @@ export default {
 
     stop_voice(){
       this.stop_voice_visible = false
-      this.mediaRecorder.stop();
+      if(this.mediaRecorder) this.mediaRecorder.stop();
       this.isRunning = false
       this.player_visible = true
       this.stopTimer()
