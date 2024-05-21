@@ -3,9 +3,7 @@ import telebot
 import configparser
 from modules.handlers import handle_text_message, handle_voice_message
 from modules.logger import build_logger
-from telebot import apihelper
 
-apihelper.proxy = {'http':'socks5://localhost:6000'}
 
 def read_config():
     config = configparser.ConfigParser()
@@ -37,12 +35,12 @@ def process_voice_message(message):
 
 @bot.message_handler(func=lambda message: True)
 def process_text_message(message):
-    print(message)
     handle_text_message(message, user_data, bot, backend_url, logger)
 
 
 if __name__ == '__main__':
     try:
+        logger.info('Bot started')
         bot.polling()
     except Exception as e:
         logger.error("An error occurred while running the bot: %s", str(e))
