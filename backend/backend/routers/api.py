@@ -21,10 +21,6 @@ modelClient = OllamaClient(config.ollama_url, config.current_model)
 dirname = os.path.dirname(__file__)
 
 
-def request_wrapper(method, *args, **kwargs) -> requests.Response:
-    return method(*args, **kwargs)
-
-
 @router.get("/")
 def root():
     return {"message": "Hello World"}
@@ -58,48 +54,13 @@ def ask_model_by_text(request: TextRequest):
 
 @router.post("/send_voice_request")
 async def handle_voice_request(request: Request):
-    url = "http://whisper:9000/asr"
     form = await request.form()
-    print(form)
-
     form_dict: Dict = form.__dict__['_dict']
-    # print(form_dict)
+    print(form_dict)
     content: UploadFile = form_dict['audio']
-    content = await content.read()
-    rv = base64.b64encode(content).decode()
-    payload = {
-        "input": {
-            "encode": True,
-            "task": "transcribe",
-            "language": "ru",
-            "vad_filter": True,
-            "word_timestamps": False,
-            "output": "txt",
-        },
-    }
-    headers = {
-        'content_type':'multipart/form-data'
-    }
-    print(form_dict, headers)
-
-    transcription = request_wrapper(
-        requests.post,
-        url, 
-        params=payload,
-        data=rv,
-        headers=headers,
-    )
-
-    print("Transcript: ", transcription.text)
-    task = text_request_handling.apply_async([],{"request": transcription.text, "course": form_dict['course'], "subject": form_dict['subject']})
+    audio_content = await content.read()
+    task = audio_request_handling.apply_async([],{"audio_bytes": audio_content, "course": form_dict['course'], "subject": form_dict['subject']})
     return {'text': task.id}
-
-
-
-@router.post("/celery_example/{text}")
-def celery_example(text):
-    task = example_task.apply_async([],{"text": text})
-    return {'task_id': task.id}
 
 @router.get("/tasks/{task_id}")
 def get_status(task_id):

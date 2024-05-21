@@ -15,6 +15,7 @@ celery = Celery(__name__, backend=backend, broker=backend)
 # celery = Celery(__name__, backend="redis://localhost:6379/0", broker="redis://localhost:6379/0")
 
 modelClient = OllamaClient(config.ollama_url, config.current_model)
+whisperUrl = "http://whisper:9000/asr"
 dirname = os.path.dirname(__file__)
 
 @celery.task(name="example_task")
@@ -30,5 +31,32 @@ def completed_task(text = ""):
 def text_request_handling(request = "", course = "", subject = ""):
     modelClient.readContextFromFile(os.path.join(dirname, '../../parser/new_data.json'), course, subject)
     answer = modelClient.sendPrompt(request)
+    answer = translate(answer)
+    return answer
+
+@celery.task(name="audio_request_handling")
+def audio_request_handling(audio_bytes = "", course = "", subject = ""):
+    payload = {
+        "input": {
+            "encode": True,
+            "task": "transcribe",
+            "language": "ru",
+            "vad_filter": True,
+            "word_timestamps": False,
+            "output": "txt",
+        },
+    }
+
+    transcription = requests.post(
+        whisperUrl, 
+        params=payload,
+        files= {
+            'audio_file': audio_bytes
+        },
+    )
+
+    print("Transcript: ", transcription.text)
+    modelClient.readContextFromFile(os.path.join(dirname, '../../parser/new_data.json'), course, subject)
+    answer = modelClient.sendPrompt(transcription.text)
     answer = translate(answer)
     return answer
