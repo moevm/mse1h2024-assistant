@@ -168,11 +168,12 @@ export default {
     },
 
     send_voice() {
-      this.create_message("Голосовое отправлено", true)
       this.close_voice()
-
       if(this.mediaRecorder) this.mediaRecorder.stop();
-      
+      if(this.time > 12) {
+        this.create_message(`Ваше аудиосообщение слишком долгое! Пожалуйста, запишите вопрос покороче. Максимальная длительность: 12 сек. У вас - ${this.time} сек.`, false)
+        return;
+      }
       const formData = new FormData();
       formData.append("audio", this.audioBlob)
 
@@ -180,6 +181,7 @@ export default {
           this.$store.getters.getState.subject,
           formData)
           .then(res => this.create_message(res, false))
+      this.create_message("Голосовое отправлено", true)
     },
 
     handleKeyPress(event) {
@@ -206,6 +208,7 @@ export default {
 
     startTimer() {
       this.isRunning = true;
+      this.time = 0
       this.timer = setInterval(() => {
         this.time += 0.1;
       }, 100);
@@ -214,7 +217,6 @@ export default {
     stopTimer() {
       this.isRunning = false;
       clearInterval(this.timer);
-      this.time = 0
     },
   }
 }
