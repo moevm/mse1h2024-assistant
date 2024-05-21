@@ -168,10 +168,14 @@ export default {
     },
 
     async send_voice() {
-      this.create_message("Голосовое отправлено", true)
       await this.stop_voice()
       this.close_voice()
-
+      
+      if(this.time > 12) {
+        this.create_message(`Ваше аудиосообщение слишком долгое! Пожалуйста, запишите вопрос покороче. Максимальная длительность: 12 сек. У вас - ${this.time} сек.`, false)
+        return;
+      }
+      this.create_message("Голосовое отправлено", true)
       setTimeout(() => post_voice_request(this.$store.getters.getState.course,
           this.$store.getters.getState.subject,
           this.audioBlob,
@@ -202,6 +206,7 @@ export default {
 
     startTimer() {
       this.isRunning = true;
+      this.time = 0
       this.timer = setInterval(() => {
         this.time += 0.1;
       }, 100);
@@ -210,7 +215,6 @@ export default {
     stopTimer() {
       this.isRunning = false;
       clearInterval(this.timer);
-      this.time = 0
     },
   }
 }
