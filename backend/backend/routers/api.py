@@ -4,13 +4,11 @@ from typing import Dict
 from backend.models.request import TextRequest, MultipleTasksRequest
 from backend.models.client import OllamaClient
 from backend.settings import config
-from backend.celery.worker import example_task, text_request_handling, completed_task
+from backend.celery.worker import audio_request_handling, text_request_handling, completed_task
 from backend.celery.tasks import getTaskResult, getTasksStatus, deleteTasks
 from backend.translator.translator import translate
-import requests
 import os
 import json
-import base64
 
 router = APIRouter(
     prefix='/api',
@@ -56,7 +54,6 @@ def ask_model_by_text(request: TextRequest):
 async def handle_voice_request(request: Request):
     form = await request.form()
     form_dict: Dict = form.__dict__['_dict']
-    print(form_dict)
     content: UploadFile = form_dict['audio']
     audio_content = await content.read()
     task = audio_request_handling.apply_async([],{"audio_bytes": audio_content, "course": form_dict['course'], "subject": form_dict['subject']})
