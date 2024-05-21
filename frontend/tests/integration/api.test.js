@@ -1,7 +1,9 @@
 import axios from "axios";
+const hostAddr = process.env.HOST_ADDR || 'localhost';
 
 const instance = axios.create({
-    baseURL: 'http://host.docker.internal:5000',  // Установка базового URL
+
+    baseURL: `http://${hostAddr}:5000`
 });
 
 describe("API backend", () => {
