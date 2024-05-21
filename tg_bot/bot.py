@@ -40,6 +40,7 @@ def process_text_message(message):
 
 if __name__ == '__main__':
     try:
+        logger.info('Bot started')
         bot.polling()
     except Exception as e:
         logger.error("An error occurred while running the bot: %s", str(e))
