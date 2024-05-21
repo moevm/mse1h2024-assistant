@@ -3,6 +3,5 @@ FROM python:3.9
 
 WORKDIR /tg_bot
 COPY . /tg_bot
-RUN chmod +x /tg_bot/bot.py
 RUN pip install --no-cache-dir --upgrade -r /tg_bot/requirements.txt
 CMD python3 /tg_bot/bot.py
