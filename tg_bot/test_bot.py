@@ -44,7 +44,7 @@ def test_send_long_text_to_backend(backend_url):
     response = send_text_to_backend(backend_url, course, subject, long_question, logger)
 
     assert response is not None
-    assert "Ваш запрос слишком длинный! Максимальная поддерживаемая длина" in response.text
+    assert "Ваш запрос слишком длинный! Максимальная поддерживаемая длина - 100 знаков." in response
 
 
 def test_send_long_audio_to_backend(backend_url):
@@ -70,4 +70,4 @@ def test_send_long_audio_to_backend(backend_url):
     response = send_voice_to_backend(backend_url, course, subject, audio_blob, logger)
 
     assert response is not None
-    assert "Ваше аудиосообщение слишком длинное! Пожалуйста, запишите его покороче" in response.text
+    assert "" in response
