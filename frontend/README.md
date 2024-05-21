@@ -20,7 +20,7 @@ npm run build
 npm run unit_test
 ```
 
-### Integration tests (Перед началом тестирования нужно выполнить run.sh проекта, и перейти в папку frontend)
+### Integration tests (Перед началом тестирования нужно выполнить run.sh проекта и перейти в папку frontend)
 ```
 npm run integration_test
 ```
