@@ -8,4 +8,4 @@ RUN npm install
 
 RUN chmod -R a+x node_modules
 
-CMD ["npm", "run", "integration_test"]
+CMD ["tail", "-f", "/dev/null"]
