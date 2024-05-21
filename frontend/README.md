@@ -15,12 +15,12 @@ npm run serve
 npm run build
 ```
 
-### Unit tests
+### Unit tests (Для запуска тестов нужно перейти в папку frontend)
 ```
 npm run unit_test
 ```
 
-### Integration tests (Перед началом тестирования нужно выполнить run.sh проекта)
+### Integration tests (Перед началом тестирования нужно выполнить run.sh проекта, и перейти в папку frontend)
 ```
 npm run integration_test
 ```

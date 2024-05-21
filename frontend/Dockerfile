@@ -10,9 +10,6 @@ RUN chmod -R a+x node_modules
 
 RUN npm run build
 
-CMD ["npm", "run", "unit_test"]
-CMD ["npm", "run", "integration_test"]
-
 FROM nginx:stable-alpine as production-stage
 
 COPY --from=build-stage /frontend/dist /usr/share/nginx/html
