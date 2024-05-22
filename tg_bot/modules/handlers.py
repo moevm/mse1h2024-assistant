@@ -83,6 +83,11 @@ def handle_voice_message(message, user_data, bot, backend_url, logger):
     if 'course' not in user_data[message.from_user.id] or 'subject' not in user_data[message.from_user.id]:
         bot.reply_to(message, "Для начала введите курс и предмет, используя команду \start.")
     else:
+        if message.voice.duration > 12:
+            bot.reply_to(message,
+                         "Ваше аудиосообщение слишком долгое! Пожалуйста, запишите вопрос покороче. Максимальная "
+                         "длительность: 12 сек.")
+            return
         file_id = message.voice.file_id
         file_info = bot.get_file(file_id)
         voice_file = bot.download_file(file_info.file_path)
