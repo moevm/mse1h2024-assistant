@@ -18,16 +18,13 @@ npm run build
 ### Тестирование 
 1. Проект должен быть запущен по основной инструкции(для итеграционных тестов обязательно)
 2. Сборка тестового контейнера: \
-```docker build -f DockerfileTest . -t test```
+```docker build -f DockerfileTest . -t frontend_test```
 3. Запуск тестового контейнера \
-Windows: \
-```docker run --name test -d -e HOST_ADDR=host.docker.internal test```\
-Linux : \
-```docker run --name test -d -e HOST_ADDR=172.17.0.1 test```
+```docker run --name frontend_test -d --network mse1h2024-assistant_main frontend_test```\
 4. Запуск юнит тестов \
-```docker exec -it test npm run unit_test```
+```docker exec -it frontend_test npm run unit_test```
 5. Запуск интеграционных тестов \
- ```docker exec -it test npm run integration_test```
+ ```docker exec -it frontend_test npm run integration_test```
 
 Или запуск напрямую при наличии npm \
 ```npm run integration_test``` \
