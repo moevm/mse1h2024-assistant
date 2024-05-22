@@ -6,10 +6,10 @@
 Находясь в mse1h2024-assistant/backend:
 
 2. Сборка тестового контейнера: \
-```docker build -t backend_test -f DockerfileTest .```
+```docker build -f DockerfileTest . -t backend_test```
 3. Запуск тестового контейнера и тестов: \
-```docker run --network mse1h2024-assistant_main -d backend_test```
+```docker run --name backend_test --network mse1h2024-assistant_main -d backend_test```
 4. Запуск юнит-тестов: \
-```docker exec -it <id контейнера> bash -c "cd ./tests && python3 -m unittest test_routers.py```
+```docker exec -it backend_test bash -c "cd ./tests && python3 -m unittest test_routers.py"```
 5. Запуск интеграционных тестов: \
-```docker exec -it  <id контейнера>  pytest ./tests/test_whisper.py```
+```docker exec -it backend_test bash -c "cd ./tests && python -m pytest -m integration"```
