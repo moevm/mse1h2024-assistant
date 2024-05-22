@@ -85,5 +85,8 @@ class TestRouters(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {'text': task.id})
+
+if __name__ == '__main__':
+    unittest.main()
         
     

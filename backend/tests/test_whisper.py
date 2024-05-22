@@ -7,7 +7,7 @@ whisper_test_port = config.whisper_port
 
 @pytest.mark.integration
 def test_decode_audio_successfully():
-    f = open("./tests/whisper/test_audio.ogg", "rb")
+    f = open("./tests/test_audio.ogg", "rb")
     audio_data = f.read()
     f.close()
     
