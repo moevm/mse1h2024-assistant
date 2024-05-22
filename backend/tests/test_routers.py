@@ -4,7 +4,7 @@ from pydantic import BaseModel
 import unittest
 from typing import Dict
 from backend.main import app
-from backend.celery.worker import text_request_handling, example_task
+from backend.celery.worker import text_request_handling
 from unittest.mock import Mock, patch
 import requests
 from starlette.datastructures import FormData, Headers

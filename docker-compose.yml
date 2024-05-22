@@ -94,5 +94,12 @@ services:
     networks:
       - main
 
+  tg_bot:
+    build:
+      context: ./tg_bot
+      dockerfile: Dockerfile
+    networks:
+      - main
+
 networks:
   main:
