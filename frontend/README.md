@@ -15,22 +15,22 @@ npm run serve
 npm run build
 ```
 
-### Unit tests (Для запуска тестов нужно перейти в папку frontend)
-```
-npm run unit_test
-```
+### Тестирование 
+1. Проект должен быть запущен по основной инструкции(для итеграционных тестов обязательно)
+2. Сборка тестового контейнера: \
+```docker build -f DockerfileTest . -t test```
+3. Запуск тестового контейнера \
+Windows: \
+```docker run --name test -d -e HOST_ADDR=host.docker.internal test```\
+Linux : \
+```docker run --name test -d -e HOST_ADDR=172.17.0.1 test```
+4. Запуск юнит тестов \
+```docker exec -it test npm run unit_test```
+5. Запуск интеграционных тестов \
+ ```docker exec -it test npm run integration_test```
 
-### Tests 
-1) Выполнить ```run.sh``` (для итеграционных тестов обязательно)
-2) Собрать конейнер ```docker build -f DockerfileTest . -t test```
-3) Запустить контейнер \
-Windows: ```docker run --name test -d -e HOST_ADDR=host.docker.internal test```\
-Linux : ```docker run --name test -d -e HOST_ADDR=172.17.0.1 test```
-4) Запустить юнит тесты ```docker exec -it test npm run unit_test```
-5) Запустить интеграционные тесты ```docker exec -it test npm run integration_test```
-
-Или запуск напрямую при наличии npm (предварительно перейти в папку frontend)
-```npm run integration_test```
+Или запуск напрямую при наличии npm \
+```npm run integration_test``` \
 ```npm run unit_test```
 
 

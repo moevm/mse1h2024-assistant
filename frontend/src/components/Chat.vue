@@ -15,8 +15,8 @@
 
       <v-card-actions class="d-flex justify-center" style="padding: 0; margin-right: 8px; height: 72px;">
         <v-text-field data-testid="text-test" v-show="text_visible" v-model="newMessage" @keyup.enter="send_message" label="Сообщение" style="margin: 8px" hide-details></v-text-field>
-        <v-btn data-testid="send-test" class="button" v-show="send_text_visible" @click="send_message" color="primary" icon="mdi-send-variant-outline"></v-btn>
-        <v-btn data-testid="voice-test" class="button" v-show="open_voice_visible" @click="start_voice" color="primary" style="margin: 0" icon="mdi-microphone-outline"></v-btn>
+        <v-btn data-testid="send-test" class="button" :disabled="send_text_btn_disabled" v-show="send_text_visible" @click="send_message" color="primary" icon="mdi-send-variant-outline"></v-btn>
+        <v-btn data-testid="voice-test" class="button" v-show="open_voice_visible" :disabled="send_voice_btn_disabled" @click="start_voice" color="primary" style="margin: 0" icon="mdi-microphone-outline"></v-btn>
         <p v-show="isRunning">Запись:</p><div id="indicator" v-show="isRunning">{{ formatTime }}</div>
         <audio v-show="player_visible" controls ref="audioPlayer" :src="audioSrc" type="audio/mpeg"></audio>
         <v-btn class="button" v-show="stop_voice_visible" @click="stop_voice" color="primary" style="margin: 0" icon="mdi-pause"></v-btn>
@@ -43,6 +43,8 @@ export default {
       delete_voice_visible: false,
       player_visible: false,
       stop_voice_visible: false,
+      send_text_btn_disabled: false,
+      send_voice_btn_disabled: false,
       audioSrc: null,
       audioBlob: null,
       mediaRecorder: null,
@@ -90,6 +92,9 @@ export default {
 
   methods: {
     create_message(content, is_me) {
+      if(!is_me){
+        this.allow_chat();
+      }
       this.messages.unshift({
         content: content,
         me: is_me,
@@ -108,8 +113,12 @@ export default {
       return hours + ":" + minutes;
     },
     send_message() {
+      if(this.send_text_btn_disabled){
+        return;
+      }
       if (this.newMessage.trim() !== '') {
         this.create_message(this.newMessage, true)
+        this.block_chat();
         post_text_request(this.$store.getters.getState.course,
             this.$store.getters.getState.subject, this.newMessage, (res) => this.create_message(res, false));
         this.newMessage = '';
@@ -121,6 +130,9 @@ export default {
     },
 
     start_voice() {
+      if(this.send_voice_btn_disabled){
+        return;
+      }
       this.startTimer()
       this.open_voice()
       this.audioSrc = null
@@ -167,9 +179,20 @@ export default {
       this.stopTimer()
     },
 
+    block_chat() {
+      this.send_text_btn_disabled = true;
+      this.send_voice_btn_disabled = true;
+    },
+
+    allow_chat() {
+      this.send_text_btn_disabled = false;
+      this.send_voice_btn_disabled = false;
+    },
+
     async send_voice() {
       await this.stop_voice()
       this.close_voice()
+      this.block_chat();
       
       if(this.time > 12) {
         this.create_message(`Ваше аудиосообщение слишком долгое! Пожалуйста, запишите вопрос покороче. Максимальная длительность: 12 сек. У вас - ${this.time} сек.`, false)
