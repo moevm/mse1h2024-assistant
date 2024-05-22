@@ -15,6 +15,8 @@ class Config(BaseModel):
     translation_service: str
     translation_language: str
     translation_length_limit: int
+    whisper_host: str
+    whisper_port: int
     text_request_limit: int
 
 
@@ -33,6 +35,8 @@ class ConfigWrapper:
             celery_backend_url=self._config_wrapper.get('celery', 'backend_url'),
             translation_service=self._config_wrapper.get('translation', 'service'),
             translation_language=self._config_wrapper.get('translation', 'language'),
+            whisper_host=self._config_wrapper.get('whisper', 'host'),
+            whisper_port=self._config_wrapper.get('whisper', 'port'),
             translation_length_limit=self._config_wrapper.get('limits', 'translation_length_limit'),
             text_request_limit=self._config_wrapper.get('limits', 'text_request_limit')
         )
