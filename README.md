@@ -1,7 +1,7 @@
 # Требования
-1. Установлен docker версии > 26.1.0 \
-Linux: https://docs.docker.com/engine/install/ \
-Windows: https://docs.docker.com/desktop/install/windows-install/
+1. Дистрибутив Ubuntu 22.04
+2. Установлен docker версии > 26.1.0 \
+Ubuntu: https://docs.docker.com/engine/install/ubuntu/
 
 2. Видеокарта nvidia для запуска языковой модели
 
@@ -35,7 +35,6 @@ docker compose up
 
 # Тестирование проекта
 Инструкции для тестирования контейнеров приложения расположенным в соответствующих README:
-1. frontend
-2. backend
-3. whisper
-4. tg_bot
+1. [frontend](https://github.com/moevm/mse1h2024-assistant/tree/main/frontend#readme)
+2. [backend + whisper](https://github.com/moevm/mse1h2024-assistant/tree/main/backend#readme)
+4. [tg_bot](https://github.com/moevm/mse1h2024-assistant/tree/main/tg_bot#readme)
