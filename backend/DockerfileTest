@@ -7,8 +7,8 @@ COPY ./requirements.txt /tests/requirements.txt
 
 RUN pip install --no-cache-dir --upgrade -r /tests/requirements.txt
 
-COPY ./backend /tests/tests/whisper/backend
-COPY ./parser /tests/tests/whisper/parser
+COPY ./backend /tests/tests/backend
+COPY ./parser /tests/tests/parser
 COPY ./pytest.ini /tests/pytest.ini
 COPY ./tests /tests/tests
-CMD ["pytest", "./tests/whisper/test_whisper.py"]
+CMD ["tail", "-f", "/dev/null"]
