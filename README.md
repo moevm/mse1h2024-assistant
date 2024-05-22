@@ -1,7 +1,7 @@
 # Требования
-1. Установлен docker версии > 26.1.0 \
-Linux: https://docs.docker.com/engine/install/ \
-Windows: https://docs.docker.com/desktop/install/windows-install/
+1. Дистрибутив Ubuntu 22.04
+2. Установлен docker версии > 26.1.0 \
+Ubuntu: https://docs.docker.com/engine/install/ubuntu/
 
 2. Видеокарта nvidia для запуска языковой модели
 
