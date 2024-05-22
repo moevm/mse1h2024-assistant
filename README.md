@@ -35,7 +35,6 @@ docker compose up
 
 # Тестирование проекта
 Инструкции для тестирования контейнеров приложения расположенным в соответствующих README:
-1. frontend
-2. backend
-3. whisper
-4. tg_bot
+1. [frontend](https://github.com/moevm/mse1h2024-assistant/tree/main/frontend#readme)
+2. [backend + whisper](https://github.com/moevm/mse1h2024-assistant/tree/main/backend#readme)
+4. [tg_bot](https://github.com/moevm/mse1h2024-assistant/tree/main/tg_bot#readme)
