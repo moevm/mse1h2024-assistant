@@ -1,0 +1,14 @@
+FROM python:3.9
+#RUN sudo chmod -R 777 /var/lib sudo apt-get install python3.9-venv
+
+WORKDIR /tests
+
+COPY ./requirements.txt /tests/requirements.txt
+
+RUN pip install --no-cache-dir --upgrade -r /tests/requirements.txt
+
+COPY ./backend /tests/tests/whisper/backend
+COPY ./parser /tests/tests/whisper/parser
+COPY ./pytest.ini /tests/pytest.ini
+COPY ./tests /tests/tests
+CMD ["pytest", "./tests/whisper/test_whisper.py"]
