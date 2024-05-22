@@ -70,8 +70,6 @@ class OllamaClient(Client):
         self.question = userMessage
         self.__updateTemplate()
         system_prompt = self.__createPromt(self.template, "user")
-        print(self.model)
-        print(system_prompt)
         response = self.chat(model=self.model, messages=[
             system_prompt,
         ], options={'temperature': 0})

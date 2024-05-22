@@ -131,11 +131,11 @@ export default {
             this.mediaRecorder.ondataavailable = event => {
               this.chunks.push(event.data);
             };
-            this.mediaRecorder.onstop = () => {
-                const blob = new Blob(this.chunks, {type: 'audio/mpeg'});
-                this.audioBlob = blob;
+            this.mediaRecorder.onstop = async () => {
+                const blob = await new Blob(this.chunks, {type: 'audio/mpeg'});
+                this.audioBlob = await blob;
                 this.audioSrc = URL.createObjectURL(blob);
-                this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                await this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
                 this.mediaRecorder = null;
                 this.chunks = [];
             };
@@ -167,19 +167,19 @@ export default {
       this.stopTimer()
     },
 
-    send_voice() {
-      this.create_message("Голосовое отправлено", true)
+    async send_voice() {
+      await this.stop_voice()
       this.close_voice()
-
-      if(this.mediaRecorder) this.mediaRecorder.stop();
       
-      const formData = new FormData();
-      formData.append("audio", this.audioBlob)
-
-      post_voice_request(this.$store.getters.getState.course,
+      if(this.time > 12) {
+        this.create_message(`Ваше аудиосообщение слишком долгое! Пожалуйста, запишите вопрос покороче. Максимальная длительность: 12 сек. У вас - ${this.time} сек.`, false)
+        return;
+      }
+      this.create_message("Голосовое отправлено", true)
+      setTimeout(() => post_voice_request(this.$store.getters.getState.course,
           this.$store.getters.getState.subject,
-          formData, 
-          (res) => this.create_message(res, false))
+          this.audioBlob,
+          (res) => this.create_message(res, false)), 100)
     },
 
     handleKeyPress(event) {
@@ -193,7 +193,7 @@ export default {
 
     stop_voice(){
       this.stop_voice_visible = false
-      this.mediaRecorder.stop();
+      if(this.mediaRecorder) this.mediaRecorder.stop();
       this.isRunning = false
       this.player_visible = true
       this.stopTimer()
@@ -206,6 +206,7 @@ export default {
 
     startTimer() {
       this.isRunning = true;
+      this.time = 0
       this.timer = setInterval(() => {
         this.time += 0.1;
       }, 100);
@@ -214,7 +215,6 @@ export default {
     stopTimer() {
       this.isRunning = false;
       clearInterval(this.timer);
-      this.time = 0
     },
   }
 }
