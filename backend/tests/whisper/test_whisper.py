@@ -1,8 +1,9 @@
 import pytest
 from backend.whisper.whisper import decode_audio
+from backend.settings import config
 
-whisper_test_host = "localhost"
-whisper_test_port = 9001
+whisper_test_host = config.whisper_host
+whisper_test_port = config.whisper_port
 
 @pytest.mark.integration
 def test_decode_audio_successfully():
